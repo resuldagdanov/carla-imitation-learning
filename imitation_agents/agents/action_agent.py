@@ -18,7 +18,7 @@ from pygame.locals import K_v
 from imitation_agents.base_codes.map_agent import MapAgent
 from imitation_agents.base_codes.pid_controller import PIDController
 from imitation_agents.base_codes import utils
-from imitation_agents import config
+from imitation_agents import configs
 from imitation_agents.agents.action_agent import ActionAgent
 
 
@@ -37,15 +37,15 @@ class ActionAgent(MapAgent):
         super().setup(path_to_conf_file)
 
     def eatron_setup(self):
-        self.dataset_save_path = config.save_data_path
-        self.run_type = config.selected_mode
+        self.dataset_save_path = configs.save_data_path
+        self.run_type = configs.selected_mode
 
         self.red_wait_counter = 0
         self.save_counter = 0
 
-        self.debug = config.debug
-        self.save_autopilot = config.save_autopilot_data
-        self.red_wait_limit = config.red_wait_limit
+        self.debug = configs.debug
+        self.save_autopilot = configs.save_autopilot_data
+        self.red_wait_limit = configs.red_wait_limit
 
     def _init(self):
         super()._init()
@@ -89,7 +89,7 @@ class ActionAgent(MapAgent):
         self._affected_by_stop = False # if the ego vehicle is influenced by a stop sign
 
         self.weather_counter = 0
-        self.weather_change_interval = config.weather_change_interval
+        self.weather_change_interval = configs.weather_change_interval
         self.weather_id = None
 
         # PID controllers of auto_pilot
@@ -374,7 +374,7 @@ class ActionAgent(MapAgent):
                     disp_front_image = cv2.putText(disp_front_image, "Not Saved", (0, 25), fontFace=cv2.FONT_HERSHEY_COMPLEX, fontScale=1, color=(0, 0, 255))
 
         else:
-            print("Error in Agent Mode ! Should be one of the following: ", config.agent_mode)
+            print("Error in Agent Mode ! Should be one of the following: ", configs.agent_mode)
 
         if self.debug is True:
             cv2.imshow("rgb-front-FOV-60", disp_front_image)
@@ -407,8 +407,8 @@ class ActionAgent(MapAgent):
             self.save_counter += 1
 
     def check_dagger_metric(self, auto_pilot_control, dnn_agent_control):
-        if(abs(auto_pilot_control.throttle - dnn_agent_control.throttle) > config.throttle_metric_threshold or
-           abs(auto_pilot_control.steer - dnn_agent_control.steer) > config.steer_metric_threshold):
+        if(abs(auto_pilot_control.throttle - dnn_agent_control.throttle) > configs.throttle_metric_threshold or
+           abs(auto_pilot_control.steer - dnn_agent_control.steer) > configs.steer_metric_threshold):
 
             self.dagger_counter += 1
             if self.dagger_counter >= 5:
@@ -420,7 +420,7 @@ class ActionAgent(MapAgent):
             return False
     
     def check_dagger_brake_metric(self, autopilot_brake, model_brake):
-        if abs(autopilot_brake - model_brake) > config.brake_metric_threshold:
+        if abs(autopilot_brake - model_brake) > configs.brake_metric_threshold:
             self.dagger_counter += 1
 
             if self.dagger_counter >= 3:
