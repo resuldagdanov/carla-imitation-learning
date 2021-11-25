@@ -20,3 +20,6 @@ bin-release/
 # logs and models
 checkpoints/logs/
 checkpoints/models/
+
+# saved models
+*.pth
