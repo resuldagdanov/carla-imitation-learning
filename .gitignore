@@ -18,11 +18,17 @@ bin-release/
 # information for Eclipse / Flash Builder.
 
 # logs and models
-checkpoints/logs/
-checkpoints/models/
+checkpoints/logs/*
+checkpoints/models/*
 
 # saved models
 *.pth
 
-datasets/
-results/
+# remove collected data
+datasets/autopilot/*
+datasets/dagger/*
+datasets/inference/*
+datasets/manual/*
+
+# general performance jsons
+results/*
