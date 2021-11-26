@@ -4,17 +4,11 @@ import numpy as np
 
 WEATHERS = {
 		'Clear': carla.WeatherParameters.ClearNoon,
-
 		'Cloudy': carla.WeatherParameters.CloudySunset,
-
 		'Wet': carla.WeatherParameters.WetSunset,
-
 		'MidRain': carla.WeatherParameters.MidRainSunset,
-
 		'WetCloudy': carla.WeatherParameters.WetCloudySunset,
-
 		'HardRain': carla.WeatherParameters.HardRainNoon,
-
 		'SoftRain': carla.WeatherParameters.SoftRainSunset,
 }
 

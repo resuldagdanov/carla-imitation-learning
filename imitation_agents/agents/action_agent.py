@@ -95,8 +95,8 @@ class ActionAgent(MapAgent):
 
         subfolders = ["rgb_front_100", "rgb_front_60",
                       "rgb_rear_100", "rgb_rear_60",
-                      "rgb_left_60", "rgb_left_100",
-                      "rgb_right_60", "rgb_right_100",
+                      "rgb_left_60", "rgb_left_45",
+                      "rgb_right_60", "rgb_right_45",
                       "measurements"]
 
         for subfolder in subfolders:
@@ -124,10 +124,10 @@ class ActionAgent(MapAgent):
         rgb_front_image = data['rgb_front_60'][:, :, :3]
         cv_front_image = rgb_front_image[:, :, ::-1]
 
-        rgb_left_image = data['rgb_left_100'][:, :, :3]
+        rgb_left_image = data['rgb_left_45'][:, :, :3]
         cv_left_image = rgb_left_image[:, :, ::-1]
 
-        rgb_right_image = data['rgb_right_100'][:, :, :3]
+        rgb_right_image = data['rgb_right_45'][:, :, :3]
         cv_right_image = rgb_right_image[:, :, ::-1]
 
         rgb_rear_image = data['rgb_rear_100'][:, :, :3]
@@ -422,18 +422,6 @@ class ActionAgent(MapAgent):
             self.dagger_counter = 0
             return False
 
-    def destroy(self):
-        """
-        No action
-        """
-        pass
-
-    def use_stepping_mode(self):
-        """
-        Overload this function to use stepping mode!
-        """
-        return False
-
     def _get_control(self, target, far_target, tick_data):
         pos = self._get_position(tick_data)
         theta = tick_data['compass']
@@ -522,7 +510,7 @@ class ActionAgent(MapAgent):
         return am_ab > 0 and am_ab < ab_ab and am_ad > 0 and am_ad < ad_ad
 
     def _get_forward_speed(self, transform=None, velocity=None):
-        """ Convert the vehicle transform directly to forward speed """
+        
         if not velocity:
             velocity = self._vehicle.get_velocity()
         if not transform:
@@ -536,10 +524,8 @@ class ActionAgent(MapAgent):
         return speed
 
     def _is_actor_affected_by_stop(self, actor, stop, multi_step=20):
-        """
-        Check if the given actor is affected by the stop
-        """
         affected = False
+
         # first we run a fast coarse test
         current_location = actor.get_location()
         stop_location = stop.get_transform().location

@@ -1,3 +1,4 @@
+import os
 from datetime import datetime
 
 today = datetime.today() # month - date - year
@@ -9,10 +10,10 @@ current_time = str(now.strftime("%H_%M_%S"))
 # month_date_year-hour_minute_second
 time_info = current_date + "-" + current_time
 
-# directory of Eatron Platooning Repository
-base_path = "/home/resul/Eatron/Codes/Company/carla_challenge/ea202101001_platooning_demo/carla_ws" # Local
-# base_path = "/cta/eatron/CarlaChallenge/ea202101001_platooning_demo/carla_ws" # WorkStation
+# main repo directory
+base_path = "/home/resul/Research/Codes/Carla/carla-imitation-learning/imitation_agents" # TODO: change if required
 
+# saved model's folder name and model name
 best_model_date = "Nov_07_2021-15_32_09"
 best_model_name = "epoch_290.pth"
 
@@ -20,7 +21,7 @@ best_model_name = "epoch_290.pth"
 type_of_training = "brake_classifier"
 
 # inference model directory
-trained_model_path = base_path + "/model_checkpoint/" + best_model_date + "/" + type_of_training + "/" + best_model_name
+trained_model_path = base_path + "/checkpoints/" + best_model_date + "/" + type_of_training + "/" + best_model_name
 
 agent_mode = {
     0: "inference", # network model controls an ego vehicle agent
@@ -30,13 +31,10 @@ agent_mode = {
     }
 
 # select one three agent modes
-selected_mode = agent_mode[3]
+selected_mode = agent_mode[1] # TODO: change if required
 
-if agent_mode[3]:
-    # aggregated data path. will be concatenated with training dataset
-    save_data_path = base_path + "/dataset/manual/" + time_info + "/"
-else:
-    save_data_path = base_path + "/dataset/dagger/" + time_info + "/"
+# aggregated data path. will be concatenated with training dataset
+save_data_path = base_path + "/dataset/" + selected_mode + "/" + time_info + "/"
 
 # display front image during data-aggregation
 debug = True
@@ -54,3 +52,22 @@ red_wait_limit = 40
 
 # weather condition will change randomly every 10 steps
 weather_change_interval = 10
+
+# making sure that the base repo directory exists
+if not os.path.exists(base_path):
+    print("\n[EXITING !]: ", base_path, " do not exist!")
+    os._exit(os.EX_OSFILE)
+
+# make required saving directories
+if save_autopilot_data:
+    if not os.path.exists(base_path + "/dataset/"):
+        os.makedirs(base_path + "/dataset/")
+    
+    if not os.path.exists(base_path + "/dataset/inference/"):
+        os.makedirs(base_path + "/dataset/inference/")
+    if not os.path.exists(base_path + "/dataset/autopilot/"):
+        os.makedirs(base_path + "/dataset/autopilot/")
+    if not os.path.exists(base_path + "/dataset/dagger/"):
+        os.makedirs(base_path + "/dataset/dagger/")
+    if not os.path.exists(base_path + "/dataset/manual/"):
+        os.makedirs(base_path + "/dataset/manual/")
