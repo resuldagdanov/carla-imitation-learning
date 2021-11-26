@@ -22,7 +22,7 @@ export TEAM_AGENT=imitation_agents/agents/action_agent.py
 export ROUTES=data/routes/routes_town01_tiny.xml
 export SCENARIOS=data/scenarios/all_towns_traffic_scenarios_autopilot.json
 export CHECKPOINT_ENDPOINT=results/autopilot_result.json
-export SAVE_PATH=dataset/autopilot
+export SAVE_PATH=datasets/autopilot
 
 python3 ${LEADERBOARD_ROOT}/leaderboard/leaderboard_evaluator.py \
 --scenarios=${SCENARIOS}  \

@@ -34,7 +34,7 @@ agent_mode = {
 selected_mode = agent_mode[1] # TODO: change if required
 
 # aggregated data path. will be concatenated with training dataset
-save_data_path = base_path + "/dataset/" + selected_mode + "/" + time_info + "/"
+save_data_path = base_path + "/datasets/" + selected_mode + "/" + time_info + "/"
 
 # display front image during data-aggregation
 debug = True
@@ -60,13 +60,13 @@ if not os.path.exists(base_path):
 
 # make required saving directories
 if save_autopilot_data:
-    if not os.path.exists(base_path + "/dataset/"):
-        os.makedirs(base_path + "/dataset/")
-    if not os.path.exists(base_path + "/dataset/inference/"):
-        os.makedirs(base_path + "/dataset/inference/")
-    if not os.path.exists(base_path + "/dataset/autopilot/"):
-        os.makedirs(base_path + "/dataset/autopilot/")
-    if not os.path.exists(base_path + "/dataset/dagger/"):
-        os.makedirs(base_path + "/dataset/dagger/")
-    if not os.path.exists(base_path + "/dataset/manual/"):
-        os.makedirs(base_path + "/dataset/manual/")
+    if not os.path.exists(base_path + "/datasets/"):
+        os.makedirs(base_path + "/datasets/")
+    if not os.path.exists(base_path + "/datasets/inference/"):
+        os.makedirs(base_path + "/datasets/inference/")
+    if not os.path.exists(base_path + "/datasets/autopilot/"):
+        os.makedirs(base_path + "/datasets/autopilot/")
+    if not os.path.exists(base_path + "/datasets/dagger/"):
+        os.makedirs(base_path + "/datasets/dagger/")
+    if not os.path.exists(base_path + "/datasets/manual/"):
+        os.makedirs(base_path + "/datasets/manual/")
