@@ -26,10 +26,3 @@ checkpoints/models/
 
 # remove collected data
 datasets/
-datasets/autopilot/
-datasets/dagger/
-datasets/inference/
-datasets/manual/
-
-# general performance jsons
-results/
