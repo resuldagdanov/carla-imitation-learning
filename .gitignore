@@ -25,8 +25,7 @@ checkpoints/models/*
 *.pth
 
 # remove collected data
-datasets/.gitkeep
-datasets/autopilot/.gitkeep
+datasets/autopilot/*
 datasets/dagger/*
 datasets/inference/*
 datasets/manual/*
