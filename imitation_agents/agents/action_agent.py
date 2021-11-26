@@ -5,20 +5,10 @@ import random
 import carla
 import numpy as np
 import pygame
-from pygame.locals import K_ESCAPE
-from pygame.locals import K_SPACE
-from pygame.locals import K_a
-from pygame.locals import K_d
-from pygame.locals import K_s
-from pygame.locals import K_w
-from pygame.locals import K_r
-from pygame.locals import K_t
-from pygame.locals import K_c
-from pygame.locals import K_v
+from pygame.locals import K_ESCAPE, K_SPACE, K_a, K_d, K_s, K_w, K_r, K_t, K_c, K_v
 from imitation_agents.base_codes.map_agent import MapAgent
 from imitation_agents.base_codes.pid_controller import PIDController
-from imitation_agents.base_codes import utils
-from imitation_agents import configs
+from imitation_agents.utils import base_utils, configs
 from imitation_agents.agents.action_agent import ActionAgent
 
 
@@ -63,8 +53,8 @@ class ActionAgent(MapAgent):
 
         if self.debug is True:
             cv2.namedWindow("rgb-front-FOV-60")
-            cv2.namedWindow("rgb-left-FOV-45")
-            cv2.namedWindow("rgb-right-FOV-45")
+            cv2.namedWindow("rgb-left-FOV-100")
+            cv2.namedWindow("rgb-right-FOV-100")
             cv2.namedWindow("rgb-rear-FOV-100")
 
         # initialize pygame screen
@@ -105,8 +95,8 @@ class ActionAgent(MapAgent):
 
         subfolders = ["rgb_front_100", "rgb_front_60",
                       "rgb_rear_100", "rgb_rear_60",
-                      "rgb_left_60", "rgb_left_45",
-                      "rgb_right_60", "rgb_right_45",
+                      "rgb_left_60", "rgb_left_100",
+                      "rgb_right_60", "rgb_right_100",
                       "measurements"]
 
         for subfolder in subfolders:
@@ -134,10 +124,10 @@ class ActionAgent(MapAgent):
         rgb_front_image = data['rgb_front_60'][:, :, :3]
         cv_front_image = rgb_front_image[:, :, ::-1]
 
-        rgb_left_image = data['rgb_left_45'][:, :, :3]
+        rgb_left_image = data['rgb_left_100'][:, :, :3]
         cv_left_image = rgb_left_image[:, :, ::-1]
 
-        rgb_right_image = data['rgb_right_45'][:, :, :3]
+        rgb_right_image = data['rgb_right_100'][:, :, :3]
         cv_right_image = rgb_right_image[:, :, ::-1]
 
         rgb_rear_image = data['rgb_rear_100'][:, :, :3]
@@ -378,8 +368,8 @@ class ActionAgent(MapAgent):
 
         if self.debug is True:
             cv2.imshow("rgb-front-FOV-60", disp_front_image)
-            cv2.imshow("rgb-left-FOV-45", disp_left_image)
-            cv2.imshow("rgb-right-FOV-45", disp_right_image)
+            cv2.imshow("rgb-left-FOV-100", disp_left_image)
+            cv2.imshow("rgb-right-FOV-100", disp_right_image)
             cv2.imshow("rgb-rear-FOV-100", disp_rear_image)
             cv2.waitKey(1)
 
@@ -450,7 +440,7 @@ class ActionAgent(MapAgent):
         speed = tick_data['speed']
 
         # steering
-        angle_unnorm = utils.get_angle_to(pos, theta, target)
+        angle_unnorm = base_utils.get_angle_to(pos, theta, target)
         angle = angle_unnorm / 90
 
         steer = self._turn_controller.step(angle)
@@ -458,7 +448,7 @@ class ActionAgent(MapAgent):
         steer = round(steer, 3)
 
         # acceleration
-        angle_far_unnorm = utils.get_angle_to(pos, theta, far_target)
+        angle_far_unnorm = base_utils.get_angle_to(pos, theta, far_target)
         should_slow = abs(angle_far_unnorm) > 45.0 or abs(angle_unnorm) > 5.0
 
         target_speed = 4.0 if should_slow else 7.0
@@ -482,15 +472,15 @@ class ActionAgent(MapAgent):
 
     def _change_weather(self):
         if self.weather_counter % self.weather_change_interval == 0:
-            index = random.choice(range(len(utils.WEATHERS)))
-            dtime, altitude = random.choice(list(utils.daytimes.items()))
+            index = random.choice(range(len(base_utils.WEATHERS)))
+            dtime, altitude = random.choice(list(base_utils.daytimes.items()))
             
             altitude = np.random.normal(altitude, 10)
-            self.weather_id = utils.WEATHERS_IDS[index] + dtime
+            self.weather_id = base_utils.WEATHERS_IDS[index] + dtime
 
-            weather = utils.WEATHERS[utils.WEATHERS_IDS[index]]
+            weather = base_utils.WEATHERS[base_utils.WEATHERS_IDS[index]]
             weather.sun_altitude_angle = altitude
-            weather.sun_azimuth_angle = np.random.choice(utils.azimuths)
+            weather.sun_azimuth_angle = np.random.choice(base_utils.azimuths)
             
             self._world.set_weather(weather)
         self.weather_counter += 1
@@ -622,20 +612,20 @@ class ActionAgent(MapAgent):
 
     def _is_walker_hazard(self, walkers_list):
         z = self._vehicle.get_location().z
-        p1 = utils._numpy(self._vehicle.get_location())
-        v1 = 10.0 * utils._orientation(self._vehicle.get_transform().rotation.yaw)
+        p1 = base_utils._numpy(self._vehicle.get_location())
+        v1 = 10.0 * base_utils._orientation(self._vehicle.get_transform().rotation.yaw)
 
         for walker in walkers_list:
-            v2_hat = utils._orientation(walker.get_transform().rotation.yaw)
-            s2 = np.linalg.norm(utils._numpy(walker.get_velocity()))
+            v2_hat = base_utils._orientation(walker.get_transform().rotation.yaw)
+            s2 = np.linalg.norm(base_utils._numpy(walker.get_velocity()))
 
             if s2 < 0.05:
                 v2_hat *= s2
 
-            p2 = -3.0 * v2_hat + utils._numpy(walker.get_location())
+            p2 = -3.0 * v2_hat + base_utils._numpy(walker.get_location())
             v2 = 8.0 * v2_hat
 
-            collides, collision_point = utils.get_collision(p1, v1, p2, v2)
+            collides, collision_point = base_utils.get_collision(p1, v1, p2, v2)
 
             if collides:
                 return walker
@@ -645,10 +635,10 @@ class ActionAgent(MapAgent):
     def _is_vehicle_hazard(self, vehicle_list):
         z = self._vehicle.get_location().z
 
-        o1 = utils._orientation(self._vehicle.get_transform().rotation.yaw)
-        p1 = utils._numpy(self._vehicle.get_location())
-        s1 = max(10, 3.0 * np.linalg.norm(utils._numpy(self._vehicle.get_velocity()))) # increases the threshold distance
-        s2 = max(20, 3.0 * np.linalg.norm(utils._numpy(self._vehicle.get_velocity()))) # increases the threshold distance
+        o1 = base_utils._orientation(self._vehicle.get_transform().rotation.yaw)
+        p1 = base_utils._numpy(self._vehicle.get_location())
+        s1 = max(10, 3.0 * np.linalg.norm(base_utils._numpy(self._vehicle.get_velocity()))) # increases the threshold distance
+        s2 = max(20, 3.0 * np.linalg.norm(base_utils._numpy(self._vehicle.get_velocity()))) # increases the threshold distance
         v1_hat = o1
         v1 = s1 * v1_hat
 
@@ -656,9 +646,9 @@ class ActionAgent(MapAgent):
             if target_vehicle.id == self._vehicle.id:
                 continue
 
-            o2 = utils._orientation(target_vehicle.get_transform().rotation.yaw)
-            p2 = utils._numpy(target_vehicle.get_location())
-            s2 = max(5.0, 2.0 * np.linalg.norm(utils._numpy(target_vehicle.get_velocity())))
+            o2 = base_utils._orientation(target_vehicle.get_transform().rotation.yaw)
+            p2 = base_utils._numpy(target_vehicle.get_location())
+            s2 = max(5.0, 2.0 * np.linalg.norm(base_utils._numpy(target_vehicle.get_velocity())))
             v2_hat = o2
             v2 = s2 * v2_hat
 

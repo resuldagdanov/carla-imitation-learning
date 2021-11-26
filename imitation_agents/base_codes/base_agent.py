@@ -80,7 +80,7 @@ class BaseAgent(autonomous_agent.AutonomousAgent):
                     'type': 'sensor.camera.rgb',
                     'x': 1.3, 'y': 0.0, 'z': 2.3,
                     'roll': 0.0, 'pitch': 0.0, 'yaw': -60.0,
-                    'width': self._sensor_data['width'], 'height': self._sensor_data['height'], 'fov': self._sensor_data['low_fov'],
+                    'width': self._sensor_data['width'], 'height': self._sensor_data['height'], 'fov': self._sensor_data['high_fov'],
                     'id': 'rgb_left_45'
                     },
                 {
@@ -94,7 +94,7 @@ class BaseAgent(autonomous_agent.AutonomousAgent):
                     'type': 'sensor.camera.rgb',
                     'x': 1.3, 'y': 0.0, 'z': 2.3,
                     'roll': 0.0, 'pitch': 0.0, 'yaw': 60.0,
-                    'width': self._sensor_data['width'], 'height': self._sensor_data['height'], 'fov': self._sensor_data['low_fov'],
+                    'width': self._sensor_data['width'], 'height': self._sensor_data['height'], 'fov': self._sensor_data['high_fov'],
                     'id': 'rgb_right_45'
                     },
                 {   
@@ -143,10 +143,10 @@ class BaseAgent(autonomous_agent.AutonomousAgent):
         rgb_rear_60 = cv2.cvtColor(input_data['rgb_rear_60'][1][:, :, :3], cv2.COLOR_BGR2RGB)
 
         rgb_left_60 = cv2.cvtColor(input_data['rgb_left_60'][1][:, :, :3], cv2.COLOR_BGR2RGB)
-        rgb_left_45 = cv2.cvtColor(input_data['rgb_left_45'][1][:, :, :3], cv2.COLOR_BGR2RGB)
+        rgb_left_100 = cv2.cvtColor(input_data['rgb_left_100'][1][:, :, :3], cv2.COLOR_BGR2RGB)
 
         rgb_right_60 = cv2.cvtColor(input_data['rgb_right_60'][1][:, :, :3], cv2.COLOR_BGR2RGB)
-        rgb_right_45 = cv2.cvtColor(input_data['rgb_right_45'][1][:, :, :3], cv2.COLOR_BGR2RGB)
+        rgb_right_100 = cv2.cvtColor(input_data['rgb_right_100'][1][:, :, :3], cv2.COLOR_BGR2RGB)
         
         gps = input_data['gps'][1][:2]
         speed = input_data['speed'][1]['speed']
@@ -165,10 +165,10 @@ class BaseAgent(autonomous_agent.AutonomousAgent):
             'rgb_rear_60': rgb_rear_60,
 
             'rgb_left_60': rgb_left_60,
-            'rgb_left_45': rgb_left_45,
+            'rgb_left_100': rgb_left_100,
 
             'rgb_right_60': rgb_right_60,
-            'rgb_right_45': rgb_right_45,
+            'rgb_right_100': rgb_right_100,
 
             'lidar' : lidar,
             'radar' : radar,

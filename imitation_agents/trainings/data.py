@@ -12,7 +12,7 @@ class DatasetLoader(Dataset):
         self.root_dir = root_dir
         self.subfolder_paths = []
 
-        subfolders = ["rgb_front_60", "rgb_right_45", "rgb_left_45", "measurements", "lidar"]
+        subfolders = ["rgb_front_60", "rgb_right_100", "rgb_left_100", "measurements", "lidar"]
 
         for subfolder in subfolders:
             self.subfolder_paths.append(os.path.join(self.root_dir, subfolder))
