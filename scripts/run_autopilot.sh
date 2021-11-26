@@ -18,10 +18,10 @@ export DEBUG_CHALLENGE=0
 export REPETITIONS=1
 
 # TODO: change the following exports
-export ROUTES=data/routes/routes_town01_tiny.xml
 export TEAM_AGENT=imitation_agents/agents/action_agent.py
-export CHECKPOINT_ENDPOINT=results/autopilot_result.json
+export ROUTES=data/routes/routes_town01_tiny.xml
 export SCENARIOS=data/scenarios/all_towns_traffic_scenarios_autopilot.json
+export CHECKPOINT_ENDPOINT=results/autopilot_result.json
 export SAVE_PATH=dataset/autopilot
 
 python3 ${LEADERBOARD_ROOT}/leaderboard/leaderboard_evaluator.py \
