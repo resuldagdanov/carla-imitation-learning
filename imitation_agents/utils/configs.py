@@ -62,7 +62,6 @@ if not os.path.exists(base_path):
 if save_autopilot_data:
     if not os.path.exists(base_path + "/dataset/"):
         os.makedirs(base_path + "/dataset/")
-    
     if not os.path.exists(base_path + "/dataset/inference/"):
         os.makedirs(base_path + "/dataset/inference/")
     if not os.path.exists(base_path + "/dataset/autopilot/"):
