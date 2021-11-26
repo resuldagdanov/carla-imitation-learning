@@ -25,10 +25,9 @@ checkpoints/models/*
 *.pth
 
 # remove collected data
-datasets/autopilot/*
-datasets/dagger/*
-datasets/inference/*
-datasets/manual/*
+datasets/*
 
 # general performance jsons
 results/*
+
+!*.gitkeep
