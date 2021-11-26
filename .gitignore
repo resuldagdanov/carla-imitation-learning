@@ -25,7 +25,6 @@ checkpoints/models/*
 *.pth
 
 # remove collected data
-datasets/*
 datasets/autopilot/*
 datasets/dagger/*
 datasets/inference/*
