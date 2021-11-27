@@ -29,5 +29,3 @@ datasets/*
 
 # general performance jsons
 results/*
-
-!.gitkeep

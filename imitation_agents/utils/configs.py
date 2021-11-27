@@ -57,3 +57,16 @@ weather_change_interval = 10
 if not os.path.exists(base_path):
     print("\n[EXITING !]: ", base_path, " do not exist!")
     os._exit(os.EX_OSFILE)
+
+# make required saving directories
+if save_autopilot_data:
+    if not os.path.exists(base_path + "/datasets/"):
+        os.makedirs(base_path + "/datasets/")
+    if not os.path.exists(base_path + "/datasets/inference/"):
+        os.makedirs(base_path + "/datasets/inference/")
+    if not os.path.exists(base_path + "/datasets/autopilot/"):
+        os.makedirs(base_path + "/datasets/autopilot/")
+    if not os.path.exists(base_path + "/datasets/dagger/"):
+        os.makedirs(base_path + "/datasets/dagger/")
+    if not os.path.exists(base_path + "/datasets/manual/"):
+        os.makedirs(base_path + "/datasets/manual/")
