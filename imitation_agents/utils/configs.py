@@ -11,7 +11,7 @@ current_time = str(now.strftime("%H_%M_%S"))
 time_info = current_date + "-" + current_time
 
 # main repo directory
-base_path = "/home/resul/Research/Codes/Carla/carla-imitation-learning/imitation_agents" # TODO: change if required
+base_path = os.environ.get('BASE_CODE_PATH', None)
 
 # saved model's folder name and model name
 best_model_date = "Nov_07_2021-15_32_09"

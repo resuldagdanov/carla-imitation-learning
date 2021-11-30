@@ -8,6 +8,7 @@ Imitation Learning Model Training in Carla with DAgger
 4. [Run Autopilot](#run-autopilot)
 5. [Training](#training)
 6. [Evaluation](#evaluation)
+7. [Bug Fixes](#bug-fixes)
 
 ## Setup
 Clone the repo and build the environment
@@ -70,3 +71,7 @@ Spin up a CARLA server (described above).
 chmod 777 -R *
 ./scripts/leaderboard_evaluation.sh
 ```
+
+## Bug Fixes
+* [track type] ```./leaderboard/leaderboard/autoagents/agent_wrapper.py```
+line 183-184 has to be commented because for some reason leaderboard pops-up ```Track.SENSORS != Track.SENSORS``` logic.
