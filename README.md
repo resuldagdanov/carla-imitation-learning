@@ -11,13 +11,17 @@ Imitation Learning Model Training in Carla with DAgger
 
 ## Setup
 Clone the repo and build the environment
-
 ```Shell
 git clone --recursive https://github.com/resuldagdanov/carla-imitation-learning.git
 cd carla
 conda create -n carla python=3.7
 pip3 install -r requirements.txt
 conda activate carla
+```
+
+Merge all submodules
+```Shell
+git submodule update --merge
 ```
 
 Download and setup CARLA 0.9.13
