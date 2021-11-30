@@ -41,13 +41,13 @@ class BaseAgent(autonomous_agent.AutonomousAgent):
 
     def sensors(self):
         return [
-                {
-                    'type': 'sensor.camera.rgb',
-                    'x': 1.3, 'y': 0.0, 'z': 2.3,
-                    'roll': 0.0, 'pitch': 0.0, 'yaw': 0.0,
-                    'width': self._sensor_data['width'], 'height': self._sensor_data['height'], 'fov': self._sensor_data['high_fov'],
-                    'id': 'rgb_front_100'
-                    },
+                # {
+                #     'type': 'sensor.camera.rgb',
+                #     'x': 1.3, 'y': 0.0, 'z': 2.3,
+                #     'roll': 0.0, 'pitch': 0.0, 'yaw': 0.0,
+                #     'width': self._sensor_data['width'], 'height': self._sensor_data['height'], 'fov': self._sensor_data['high_fov'],
+                #     'id': 'rgb_front_100'
+                #     },
                 {
                     'type': 'sensor.camera.rgb',
                     'x': 1.3, 'y': 0.0, 'z': 2.3,
@@ -62,40 +62,40 @@ class BaseAgent(autonomous_agent.AutonomousAgent):
                     'width': self._sensor_data['width'], 'height': self._sensor_data['height'], 'fov': self._sensor_data['high_fov'],
                     'id': 'rgb_rear_100'
                     },
-                {
-                    'type': 'sensor.camera.rgb',
-                    'x': 1.3, 'y': 0.0, 'z': 2.3,
-                    'roll': 0.0, 'pitch': 0.0, 'yaw': -180.0,
-                    'width': self._sensor_data['width'], 'height': self._sensor_data['height'], 'fov': self._sensor_data['mid_fov'],
-                    'id': 'rgb_rear_60'
-                    },
-                {
-                    'type': 'sensor.camera.rgb',
-                    'x': 1.3, 'y': 0.0, 'z': 2.3,
-                    'roll': 0.0, 'pitch': 0.0, 'yaw': -60.0,
-                    'width': self._sensor_data['width'], 'height': self._sensor_data['height'], 'fov': self._sensor_data['mid_fov'],
-                    'id': 'rgb_left_60'
-                    },
+                # {
+                #     'type': 'sensor.camera.rgb',
+                #     'x': 1.3, 'y': 0.0, 'z': 2.3,
+                #     'roll': 0.0, 'pitch': 0.0, 'yaw': -180.0,
+                #     'width': self._sensor_data['width'], 'height': self._sensor_data['height'], 'fov': self._sensor_data['mid_fov'],
+                #     'id': 'rgb_rear_60'
+                #     },
+                # {
+                #     'type': 'sensor.camera.rgb',
+                #     'x': 1.3, 'y': 0.0, 'z': 2.3,
+                #     'roll': 0.0, 'pitch': 0.0, 'yaw': -60.0,
+                #     'width': self._sensor_data['width'], 'height': self._sensor_data['height'], 'fov': self._sensor_data['mid_fov'],
+                #     'id': 'rgb_left_60'
+                #     },
                 {
                     'type': 'sensor.camera.rgb',
                     'x': 1.3, 'y': 0.0, 'z': 2.3,
                     'roll': 0.0, 'pitch': 0.0, 'yaw': -60.0,
                     'width': self._sensor_data['width'], 'height': self._sensor_data['height'], 'fov': self._sensor_data['high_fov'],
-                    'id': 'rgb_left_45'
+                    'id': 'rgb_left_100'
                     },
-                {
-                    'type': 'sensor.camera.rgb',
-                    'x': 1.3, 'y': 0.0, 'z': 2.3,
-                    'roll': 0.0, 'pitch': 0.0, 'yaw': 60.0,
-                    'width': self._sensor_data['width'], 'height': self._sensor_data['height'], 'fov': self._sensor_data['mid_fov'],
-                    'id': 'rgb_right_60'
-                    },
+                # {
+                #     'type': 'sensor.camera.rgb',
+                #     'x': 1.3, 'y': 0.0, 'z': 2.3,
+                #     'roll': 0.0, 'pitch': 0.0, 'yaw': 60.0,
+                #     'width': self._sensor_data['width'], 'height': self._sensor_data['height'], 'fov': self._sensor_data['mid_fov'],
+                #     'id': 'rgb_right_60'
+                #     },
                 {
                     'type': 'sensor.camera.rgb',
                     'x': 1.3, 'y': 0.0, 'z': 2.3,
                     'roll': 0.0, 'pitch': 0.0, 'yaw': 60.0,
                     'width': self._sensor_data['width'], 'height': self._sensor_data['height'], 'fov': self._sensor_data['high_fov'],
-                    'id': 'rgb_right_45'
+                    'id': 'rgb_right_100'
                     },
                 {   
                     'type': 'sensor.lidar.ray_cast',
@@ -136,17 +136,17 @@ class BaseAgent(autonomous_agent.AutonomousAgent):
 
         affordances = self._get_affordances()
 
-        rgb_front_100 = cv2.cvtColor(input_data['rgb_front_100'][1][:, :, :3], cv2.COLOR_BGR2RGB)
+        # rgb_front_100 = cv2.cvtColor(input_data['rgb_front_100'][1][:, :, :3], cv2.COLOR_BGR2RGB)
         rgb_front_60 = cv2.cvtColor(input_data['rgb_front_60'][1][:, :, :3], cv2.COLOR_BGR2RGB)
 
         rgb_rear_100 = cv2.cvtColor(input_data['rgb_rear_100'][1][:, :, :3], cv2.COLOR_BGR2RGB)
-        rgb_rear_60 = cv2.cvtColor(input_data['rgb_rear_60'][1][:, :, :3], cv2.COLOR_BGR2RGB)
+        # rgb_rear_60 = cv2.cvtColor(input_data['rgb_rear_60'][1][:, :, :3], cv2.COLOR_BGR2RGB)
 
-        rgb_left_60 = cv2.cvtColor(input_data['rgb_left_60'][1][:, :, :3], cv2.COLOR_BGR2RGB)
         rgb_left_100 = cv2.cvtColor(input_data['rgb_left_100'][1][:, :, :3], cv2.COLOR_BGR2RGB)
+        # rgb_left_60 = cv2.cvtColor(input_data['rgb_left_60'][1][:, :, :3], cv2.COLOR_BGR2RGB)
 
-        rgb_right_60 = cv2.cvtColor(input_data['rgb_right_60'][1][:, :, :3], cv2.COLOR_BGR2RGB)
         rgb_right_100 = cv2.cvtColor(input_data['rgb_right_100'][1][:, :, :3], cv2.COLOR_BGR2RGB)
+        # rgb_right_60 = cv2.cvtColor(input_data['rgb_right_60'][1][:, :, :3], cv2.COLOR_BGR2RGB)
         
         gps = input_data['gps'][1][:2]
         speed = input_data['speed'][1]['speed']
@@ -158,17 +158,17 @@ class BaseAgent(autonomous_agent.AutonomousAgent):
         weather = self._weather_to_dict(self._world.get_weather())
 
         return {
-            'rgb_front_100': rgb_front_100,
+            # 'rgb_front_100': rgb_front_100,
             'rgb_front_60': rgb_front_60,
 
             'rgb_rear_100': rgb_rear_100,
-            'rgb_rear_60': rgb_rear_60,
-
-            'rgb_left_60': rgb_left_60,
+            # 'rgb_rear_60': rgb_rear_60,
+            
             'rgb_left_100': rgb_left_100,
+            # 'rgb_left_60': rgb_left_60,
 
-            'rgb_right_60': rgb_right_60,
             'rgb_right_100': rgb_right_100,
+            # 'rgb_right_60': rgb_right_60,
 
             'lidar' : lidar,
             'radar' : radar,

@@ -9,7 +9,7 @@ from pygame.locals import K_ESCAPE, K_SPACE, K_a, K_d, K_s, K_w, K_r, K_t, K_c, 
 from imitation_agents.base_codes.map_agent import MapAgent
 from imitation_agents.base_codes.pid_controller import PIDController
 from imitation_agents.utils import base_utils, configs
-from imitation_agents.agents.action_agent import ActionAgent
+from imitation_agents.networks.action_model import ActionModel
 
 
 def get_entry_point():
@@ -53,9 +53,9 @@ class ActionAgent(MapAgent):
 
         if self.debug is True:
             cv2.namedWindow("rgb-front-FOV-60")
+            cv2.namedWindow("rgb-rear-FOV-100")
             cv2.namedWindow("rgb-left-FOV-100")
             cv2.namedWindow("rgb-right-FOV-100")
-            cv2.namedWindow("rgb-rear-FOV-100")
 
         # initialize pygame screen
         if self.run_type is "manual":
@@ -68,7 +68,7 @@ class ActionAgent(MapAgent):
 
         # init agent
         if self.run_type is "dagger" or self.run_type is "inference":
-            self.agent = ActionAgent()
+            self.agent = ActionModel()
 
         if self.run_type is "autopilot" or self.run_type is "dagger" or self.run_type is "manual":
             self.init_dataset(output_dir=self.dataset_save_path)
@@ -93,11 +93,16 @@ class ActionAgent(MapAgent):
         self.subfolder_paths = []
         self.data_count = 0
 
-        subfolders = ["rgb_front_100", "rgb_front_60",
-                      "rgb_rear_100", "rgb_rear_60",
-                      "rgb_left_60", "rgb_left_45",
-                      "rgb_right_60", "rgb_right_45",
-                      "measurements"]
+        subfolders = [
+            # "rgb_front_100",
+            "rgb_front_60",
+            "rgb_rear_100",
+            # "rgb_rear_60",
+            "rgb_left_100",
+            # "rgb_left_60",
+            "rgb_right_100",
+            # "rgb_right_60",
+            "measurements"]
 
         for subfolder in subfolders:
             self.subfolder_paths.append(os.path.join(output_dir, subfolder))
@@ -124,22 +129,22 @@ class ActionAgent(MapAgent):
         rgb_front_image = data['rgb_front_60'][:, :, :3]
         cv_front_image = rgb_front_image[:, :, ::-1]
 
-        rgb_left_image = data['rgb_left_45'][:, :, :3]
-        cv_left_image = rgb_left_image[:, :, ::-1]
-
-        rgb_right_image = data['rgb_right_45'][:, :, :3]
-        cv_right_image = rgb_right_image[:, :, ::-1]
-
         rgb_rear_image = data['rgb_rear_100'][:, :, :3]
         cv_rear_image = rgb_rear_image[:, :, ::-1]
 
-        image_list = [cv_front_image, cv_left_image, cv_right_image, cv_rear_image]
+        rgb_left_image = data['rgb_left_100'][:, :, :3]
+        cv_left_image = rgb_left_image[:, :, ::-1]
+
+        rgb_right_image = data['rgb_right_100'][:, :, :3]
+        cv_right_image = rgb_right_image[:, :, ::-1]
+
+        image_list = [cv_front_image, cv_rear_image, cv_left_image, cv_right_image]
 
         if self.debug is True:
             disp_front_image = cv2.UMat(cv_front_image)
+            disp_rear_image = cv2.UMat(cv_rear_image)
             disp_left_image = cv2.UMat(cv_left_image)
             disp_right_image = cv2.UMat(cv_right_image)
-            disp_rear_image = cv2.UMat(cv_rear_image)
 
         # get near and far waypoints from route planners
         near_node, near_command = self._waypoint_planner.run_step(gps)
@@ -368,9 +373,9 @@ class ActionAgent(MapAgent):
 
         if self.debug is True:
             cv2.imshow("rgb-front-FOV-60", disp_front_image)
+            cv2.imshow("rgb-rear-FOV-100", disp_rear_image)
             cv2.imshow("rgb-left-FOV-100", disp_left_image)
             cv2.imshow("rgb-right-FOV-100", disp_right_image)
-            cv2.imshow("rgb-rear-FOV-100", disp_rear_image)
             cv2.waitKey(1)
 
         return applied_control
