@@ -13,7 +13,7 @@ Imitation Learning Model Training in Carla with DAgger
 Clone the repo and build the environment
 
 ```Shell
-git clone https://github.com/resuldagdanov/carla-imitation-learning.git
+git clone --recursive https://github.com/resuldagdanov/carla-imitation-learning.git
 cd carla
 conda create -n carla python=3.7
 pip3 install -r requirements.txt
@@ -41,21 +41,28 @@ export LEADERBOARD_ROOT=~/carla-imitation-learning/leaderboard
 ## Running Carla Server
 Open terminal in the folder where Carla 0.9.13 is installed.
 ```Shell
-./CarlaUE4.sh --world-port=2000 --resx=300 --resy=400 --quality-level=Epic -vulkan
+./CarlaUE4.sh --world-port=2000 --resx=600 --resy=400 --quality-level=Epic -vulkan
 ```
 
 ## Run Autopilot
 Configure ```./scripts/run_autopilot.sh``` file !
 ```Shell
+chmod 777 -R *
 ./scripts/run_autopilot.sh
 ```
 
 ## Training
 All training files are in ```./imitation_agents/trainings/``` and ```./imitation_agents/networks/```
+NOTE: make sure to check out configurations folder (at ```./imitation_agents/utils/```) before training an imitation learning model.
+```Shell
+chmod 777 -R *
+./scripts/imitation_training.sh
+```
 Models are saved inside ```./checkpoints/models/``` file.
 
 ## Evaluation
 Spin up a CARLA server (described above).
 ```Shell
+chmod 777 -R *
 ./scripts/leaderboard_evaluation.sh
 ```
