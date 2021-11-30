@@ -382,9 +382,9 @@ class ActionAgent(MapAgent):
 
     def dataset_save(self, rgb, measurement_data):
         for i in range(len(self.subfolder_paths) - 1):
-            cv2.imwrite(os.path.join(self.subfolder_paths[i], "%04i.png" % self.data_count), rgb[i])
+            cv2.imwrite(os.path.join(self.subfolder_paths[i], "%05i.png" % self.data_count), rgb[i])
         
-        with open(os.path.join(self.subfolder_paths[-1], "%04i.json" % self.data_count), 'w+', encoding='utf-8') as f:
+        with open(os.path.join(self.subfolder_paths[-1], "%05i.json" % self.data_count), 'w+', encoding='utf-8') as f:
             json.dump(measurement_data, f,  ensure_ascii=False, indent=4)
 
         self.data_count += 1

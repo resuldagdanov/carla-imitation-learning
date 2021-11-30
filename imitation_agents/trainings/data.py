@@ -26,11 +26,11 @@ class DatasetLoader(Dataset):
         if torch.is_tensor(idx):
             idx = idx.tolist()
 
-        front_img_name = os.path.join(self.subfolder_paths[0],  "%04i.png" % idx)
-        right_img_name = os.path.join(self.subfolder_paths[1],  "%04i.png" % idx)
-        left_img_name = os.path.join(self.subfolder_paths[2],  "%04i.png" % idx)
-        meas_name = os.path.join(self.subfolder_paths[3],  "%04i.json" % idx)
-        lidar_name = os.path.join(self.subfolder_paths[4],  "%04i.npy" % idx)
+        front_img_name = os.path.join(self.subfolder_paths[0],  "%05i.png" % idx)
+        right_img_name = os.path.join(self.subfolder_paths[1],  "%05i.png" % idx)
+        left_img_name = os.path.join(self.subfolder_paths[2],  "%05i.png" % idx)
+        meas_name = os.path.join(self.subfolder_paths[3],  "%05i.json" % idx)
+        lidar_name = os.path.join(self.subfolder_paths[4],  "%05i.npy" % idx)
 
         front_image = io.imread(front_img_name)
         right_image = io.imread(right_img_name)
