@@ -40,7 +40,7 @@ class ActionAgent(MapAgent):
     def _init(self):
         super()._init()
 
-        self.manual_autopilot = True # manually change autopilot action
+        self.manual_autopilot = configs.manual_autopilot
 
         self.dagger_counter = 0
         self.target_vehicle_speed = 0
@@ -446,8 +446,17 @@ class ActionAgent(MapAgent):
 
         target_speed = 4.0 if should_slow else 7.0
 
+        delta = np.clip(target_speed - speed, 0.0, 0.25)
+        throttle = self._speed_controller.step(delta)
+        throttle = np.clip(throttle, 0.0, 0.75)
+
         if self.run_type is "autopilot" or self.run_type is "dagger" or self.run_type is "inference":
             brake = self._should_brake()
+
+            if brake:
+                throttle = 0.0
+            else:
+                pass
         else:
             brake = 0.0
 
@@ -456,10 +465,6 @@ class ActionAgent(MapAgent):
         self.angle = angle
         self.angle_unnorm = angle_unnorm
         self.angle_far_unnorm = angle_far_unnorm
-        
-        delta = np.clip(target_speed - speed, 0.0, 0.25)
-        throttle = self._speed_controller.step(delta)
-        throttle = np.clip(throttle, 0.0, 0.75)
 
         return steer, throttle, brake, target_speed
 
@@ -604,7 +609,7 @@ class ActionAgent(MapAgent):
     def _is_walker_hazard(self, walkers_list):
         z = self._vehicle.get_location().z
         p1 = base_utils._numpy(self._vehicle.get_location())
-        v1 = 10.0 * base_utils._orientation(self._vehicle.get_transform().rotation.yaw)
+        v1 = 13.0 * base_utils._orientation(self._vehicle.get_transform().rotation.yaw)
 
         for walker in walkers_list:
             v2_hat = base_utils._orientation(walker.get_transform().rotation.yaw)
@@ -614,7 +619,7 @@ class ActionAgent(MapAgent):
                 v2_hat *= s2
 
             p2 = -3.0 * v2_hat + base_utils._numpy(walker.get_location())
-            v2 = 8.0 * v2_hat
+            v2 = 10.0 * v2_hat
 
             collides, collision_point = base_utils.get_collision(p1, v1, p2, v2)
 
@@ -628,8 +633,8 @@ class ActionAgent(MapAgent):
 
         o1 = base_utils._orientation(self._vehicle.get_transform().rotation.yaw)
         p1 = base_utils._numpy(self._vehicle.get_location())
-        s1 = max(10, 3.0 * np.linalg.norm(base_utils._numpy(self._vehicle.get_velocity()))) # increases the threshold distance
-        s2 = max(20, 3.0 * np.linalg.norm(base_utils._numpy(self._vehicle.get_velocity()))) # increases the threshold distance
+        s1 = max(10, 5.0 * np.linalg.norm(base_utils._numpy(self._vehicle.get_velocity()))) # increases the threshold distance
+        s2 = max(20, 5.0 * np.linalg.norm(base_utils._numpy(self._vehicle.get_velocity()))) # increases the threshold distance
         v1_hat = o1
         v1 = s1 * v1_hat
 
@@ -639,7 +644,7 @@ class ActionAgent(MapAgent):
 
             o2 = base_utils._orientation(target_vehicle.get_transform().rotation.yaw)
             p2 = base_utils._numpy(target_vehicle.get_location())
-            s2 = max(5.0, 2.0 * np.linalg.norm(base_utils._numpy(target_vehicle.get_velocity())))
+            s2 = max(6.0, 4.0 * np.linalg.norm(base_utils._numpy(target_vehicle.get_velocity())))
             v2_hat = o2
             v2 = s2 * v2_hat
 

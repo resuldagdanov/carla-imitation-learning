@@ -47,6 +47,9 @@ brake_metric_threshold = 0.5
 # whether to save the measurement data of auto-pilot
 save_autopilot_data = True
 
+# manually change autopilot action; works only when manual agent type is active
+manual_autopilot = False
+
 # only save auto-pilot data for 40 action steps while braking
 red_wait_limit = 40
 

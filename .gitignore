@@ -24,8 +24,11 @@ checkpoints/models/*
 # saved models
 *.pth
 
-# remove collected data
+# collected data
 datasets/*
 
 # general performance jsons
 results/*
+
+*.__pycache__/
+*.pyc
