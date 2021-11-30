@@ -21,7 +21,7 @@ conda activate carla
 
 Merge all submodules
 ```Shell
-git submodule update --merge
+git submodule update --remote --merge
 ```
 
 Download and setup CARLA 0.9.13

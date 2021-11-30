@@ -3,7 +3,7 @@
 export CARLA_SERVER=${CARLA_ROOT}/CarlaUE4.sh
 export PYTHONPATH=$PYTHONPATH:${CARLA_ROOT}/PythonAPI
 export PYTHONPATH=$PYTHONPATH:${CARLA_ROOT}/PythonAPI/carla
-export PYTHONPATH=$PYTHONPATH:$CARLA_ROOT/PythonAPI/carla/dist/carla-0.9.10-py3.7-linux-x86_64.egg
+export PYTHONPATH=$PYTHONPATH:$CARLA_ROOT/PythonAPI/carla/dist/carla-0.9.13-py3.7-linux-x86_64.egg
 export PYTHONPATH=$PYTHONPATH:leaderboard
 export PYTHONPATH=$PYTHONPATH:scenario_runner
 
@@ -22,6 +22,8 @@ export ROUTES=${BASE_CODE_PATH}/data/routes/routes_town01_tiny.xml
 export SCENARIOS=${BASE_CODE_PATH}/data/scenarios/all_towns_traffic_scenarios_autopilot.json
 export CHECKPOINT_ENDPOINT=${BASE_CODE_PATH}/results/autopilot_result.json
 export SAVE_PATH=${BASE_CODE_PATH}/datasets/autopilot
+
+export PYTHONPATH=$PYTHONPATH:${BASE_CODE_PATH}
 
 python3 ${LEADERBOARD_ROOT}/leaderboard/leaderboard_evaluator.py \
 --port=${PORT} \
