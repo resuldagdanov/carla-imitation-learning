@@ -37,7 +37,7 @@ selected_mode = agent_mode[1] # TODO: change if required
 save_data_path = base_path + "/datasets/" + selected_mode + "/" + time_info + "/"
 
 # display front image during data-aggregation
-debug = True
+debug = False
 
 # threshold values for dagger metric
 steer_metric_threshold = 0.4
