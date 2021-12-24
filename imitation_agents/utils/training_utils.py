@@ -47,17 +47,12 @@ def lidar_to_histogram_features(lidar, crop=256):
     return features
 
 
-def calculate_brake_loss(y, gt, criterion_brake):
-    brake_loss = criterion_brake(y, gt[:, 2].view(-1, 1))
+def calculate_action_loss(throttle, steer, brake, gt, criterion_throttle, criterion_steer, criterion_brake):
+    throttle_loss = criterion_throttle(throttle, gt[:, 0].view(-1).long())
+    steer_loss = criterion_steer(steer, gt[:, 1].view(-1, 1))
+    brake_loss = criterion_brake(brake, gt[:, 2].view(-1, 1))
 
-    return brake_loss
-
-
-def calculate_action_loss(y, gt, criterion_throttle, criterion_steer):
-    throttle_loss = criterion_throttle(y[0], gt[:, 0].view(-1).long())
-    steer_loss = criterion_steer(y[1], gt[:, 1].view(-1, 1))
-
-    return throttle_loss + steer_loss
+    return throttle_loss + steer_loss + brake_loss
 
 
 def clip_throttle(throttle):

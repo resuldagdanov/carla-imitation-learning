@@ -3,7 +3,6 @@ import json
 import numpy as np
 import torch
 from torch.utils.data import Dataset
-from utils import lidar_to_histogram_features
 from skimage import io
 
 
@@ -12,7 +11,7 @@ class DatasetLoader(Dataset):
         self.root_dir = root_dir
         self.subfolder_paths = []
 
-        subfolders = ["rgb_front_60", "rgb_right_100", "rgb_left_100", "measurements", "lidar"]
+        subfolders = ["rgb_front_60", "measurements"]
 
         for subfolder in subfolders:
             self.subfolder_paths.append(os.path.join(self.root_dir, subfolder))
@@ -26,30 +25,14 @@ class DatasetLoader(Dataset):
         if torch.is_tensor(idx):
             idx = idx.tolist()
 
-        front_img_name = os.path.join(self.subfolder_paths[0],  "%05i.png" % idx)
-        right_img_name = os.path.join(self.subfolder_paths[1],  "%05i.png" % idx)
-        left_img_name = os.path.join(self.subfolder_paths[2],  "%05i.png" % idx)
-        meas_name = os.path.join(self.subfolder_paths[3],  "%05i.json" % idx)
-        lidar_name = os.path.join(self.subfolder_paths[4],  "%05i.npy" % idx)
+        img_name = os.path.join(self.subfolder_paths[0],  "%05i.png" % idx)
+        meas_name = os.path.join(self.subfolder_paths[1],  "%05i.json" % idx)
 
-        front_image = io.imread(front_img_name)
-        right_image = io.imread(right_img_name)
-        left_image = io.imread(left_img_name)
-
-        front_image = np.array(front_image.transpose((2, 0, 1)), np.float32)
-        right_image = np.array(right_image.transpose((2, 0, 1)), np.float32)
-        left_image = np.array(left_image.transpose((2, 0, 1)), np.float32)
-
-        # normalize image
-        front_image = front_image / 255
-        right_image = right_image / 255
-        left_image = left_image / 255
-
-        # lidar: XYZI
-        lidar_unprocessed = np.load(lidar_name)[...,:3]
+        image = io.imread(img_name)
+        image = np.array(image.transpose((2, 0, 1)), np.float32)
         
-        # convert lidar point cloud to image histogram
-        lidar_processed = lidar_to_histogram_features(lidar_unprocessed, crop=256)
+        # normalize image
+        image = image / 255
 
         with open(meas_name, 'r') as f:
             meas_json = json.load(f) 
@@ -76,10 +59,7 @@ class DatasetLoader(Dataset):
         local_command_point = R.T.dot(local_command_point)
 
         sample = {
-            "fronts": front_image,
-            "rights": right_image,
-            "lefts": left_image,
-            "lidars": lidar_processed,
+            "image": image,
             "velocity": np.array([meas_json['speed']], np.float32),
             'control': np.array([meas_json['throttle'], meas_json['steer'], meas_json['brake']], np.float32),
             "target_point": tuple(local_command_point)
