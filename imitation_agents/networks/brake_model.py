@@ -4,7 +4,7 @@ import torch.nn.functional as F
 import torchvision
 
 
-class ActionModel(nn.Module):
+class BrakeModel(nn.Module):
     def __init__(self, throttle_max = 0.75, steer_max = 1.0):
         super().__init__()
 

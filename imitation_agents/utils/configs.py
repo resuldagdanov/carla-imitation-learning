@@ -14,14 +14,11 @@ time_info = current_date + "-" + current_time
 base_path = os.environ.get('BASE_CODE_PATH', None)
 
 # saved model's folder name and model name
-best_model_date = "Nov_07_2021-15_32_09"
-best_model_name = "epoch_290.pth"
-
-# network output is whether brake or throttle-steer. note that to use 'action_classifier', some comments has to be uncommented
-type_of_training = "brake_classifier"
+best_model_date = "initial_test"
+best_model_name = "epoch_2.pth"
 
 # inference model directory
-trained_model_path = base_path + "/checkpoints/" + best_model_date + "/" + type_of_training + "/" + best_model_name
+trained_model_path = base_path + "/checkpoints/models/" + best_model_date + "/" + best_model_name
 
 agent_mode = {
     0: "inference", # network model controls an ego vehicle agent
@@ -31,7 +28,7 @@ agent_mode = {
     }
 
 # select one three agent modes
-selected_mode = agent_mode[1] # TODO: change if required
+selected_mode = agent_mode[0] # TODO: change if required
 
 # aggregated data path. will be concatenated with training dataset
 save_data_path = base_path + "/datasets/" + selected_mode + "/" + time_info + "/"
@@ -45,7 +42,7 @@ throttle_metric_threshold = 0.5
 brake_metric_threshold = 0.5
 
 # whether to save the measurement data of auto-pilot
-save_autopilot_data = True
+save_autopilot_data = False
 
 # manually change autopilot action; works only when manual agent type is active
 manual_autopilot = False

@@ -9,7 +9,7 @@ from pygame.locals import K_ESCAPE, K_SPACE, K_a, K_d, K_s, K_w, K_r, K_t, K_c, 
 from imitation_agents.base_codes.map_agent import MapAgent
 from imitation_agents.base_codes.pid_controller import PIDController
 from imitation_agents.utils import base_utils, configs
-from imitation_agents.networks.action_model import ActionModel
+from imitation_agents.networks.brake_model import BrakeModel
 
 
 def get_entry_point():
@@ -68,7 +68,7 @@ class ActionAgent(MapAgent):
 
         # init agent
         if self.run_type is "dagger" or self.run_type is "inference":
-            self.agent = ActionModel()
+            self.agent = BrakeModel()
 
         if self.run_type is "autopilot" or self.run_type is "dagger" or self.run_type is "manual":
             self.init_dataset(output_dir=self.dataset_save_path)

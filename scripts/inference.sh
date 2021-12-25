@@ -1,5 +1,7 @@
 #!/bin/bash
 
+pkill -9 python
+
 export CARLA_SERVER=${CARLA_ROOT}/CarlaUE4.sh
 export PYTHONPATH=$PYTHONPATH:${CARLA_ROOT}/PythonAPI
 export PYTHONPATH=$PYTHONPATH:${CARLA_ROOT}/PythonAPI/carla
@@ -17,12 +19,12 @@ export REPETITIONS=1
 # TODO: change the following exports
 # ------------------------------------------------------------------------------------------------------ #
 export BASE_CODE_PATH=~/Research/Codes/Carla/carla-imitation-learning
-export TEAM_AGENT=${BASE_CODE_PATH}/imitation_agents/agents/action_agent.py
+export TEAM_AGENT=${BASE_CODE_PATH}/imitation_agents/agents/waypoint_agent.py
 export TEAM_CONFIG=${BASE_CODE_PATH}/checkpoints/models
 export ROUTES=${BASE_CODE_PATH}/data/routes/routes_town01_tiny.xml
-export SCENARIOS=${BASE_CODE_PATH}/data/scenarios/all_towns_traffic_scenarios_autopilot.json
-export CHECKPOINT_ENDPOINT=${BASE_CODE_PATH}/results/autopilot_result_town01_tiny.json
-export SAVE_PATH=${BASE_CODE_PATH}/datasets/autopilot
+export SCENARIOS=${BASE_CODE_PATH}/data/scenarios/all_towns_traffic_scenarios_general.json
+export CHECKPOINT_ENDPOINT=${BASE_CODE_PATH}/results/inference_result_town01_tiny.json
+export SAVE_PATH=${BASE_CODE_PATH}/datasets/inference
 # ------------------------------------------------------------------------------------------------------ #
 
 export PYTHONPATH=$PYTHONPATH:${BASE_CODE_PATH}
