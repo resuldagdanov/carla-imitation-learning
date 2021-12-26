@@ -81,11 +81,11 @@ class WaypointModel(nn.Module):
 
         # normalize input image
         image_torch = self.normalize_rgb(image_torch)
-        image_torch = image_torch.to(self.device)
+        #image_torch = image_torch.to(self.device)
 
         # fused inputs to torch
         fused_inputs = np.array(fused_inputs, np.float32)
-        fused_inputs_torch = torch.from_numpy(fused_inputs.copy()).unsqueeze(0).to(self.device)
+        fused_inputs_torch = torch.from_numpy(fused_inputs.copy()).unsqueeze(0) #.to(self.device)
 
         # inference
         with torch.no_grad():

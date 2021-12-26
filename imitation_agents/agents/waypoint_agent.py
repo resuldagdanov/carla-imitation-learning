@@ -58,7 +58,7 @@ class WaypointAgent(MapAgent):
         # init agent
         if self.run_type is "dagger" or self.run_type is "inference":
             self.agent = WaypointModel()
-            self.agent.to(self.agent.device)
+            # self.agent.to(self.agent.device)
 
         if self.run_type is "autopilot" or self.run_type is "dagger":
             self.init_dataset(output_dir=self.dataset_save_path)
