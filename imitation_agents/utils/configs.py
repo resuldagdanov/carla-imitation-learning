@@ -15,7 +15,7 @@ base_path = os.environ.get('BASE_CODE_PATH', None)
 
 # saved model's folder name and model name
 best_model_date = "brake_test"
-best_model_name = "epoch_30.pth"
+best_model_name = "epoch_90.pth"
 
 # inference model directory
 trained_model_path = base_path + "/checkpoints/models/" + best_model_date + "/" + best_model_name

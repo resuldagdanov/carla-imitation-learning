@@ -1,6 +1,7 @@
 import os
 import config
 
+import numpy as np
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -8,7 +9,7 @@ from torch.utils.data import DataLoader
 from tqdm import tqdm
 
 from torch.utils.tensorboard import SummaryWriter
-from model import ActionModel
+from model import ActionModel, OffsetModel
 from data import DatasetLoader
 
 
@@ -17,6 +18,13 @@ def calculate_action_loss(throttle, steer, gt, criterion_throttle, criterion_ste
     steer_loss = criterion_steer(steer, gt[:, 1].view(-1, 1))
 
     return throttle_loss + steer_loss
+
+
+def calculate_offset_loss(dnn_brake, offset_amount, gt, criterion_brake, criterion_offset):
+    brake_loss = criterion_brake(dnn_brake, gt[:, 2].view(-1, 1))
+    offset_loss = criterion_offset(offset_amount, np.zeros(len(gt[:, 2])))
+
+    return brake_loss + offset_loss
 
 
 def trainer(writer_counter):
@@ -38,11 +46,13 @@ def trainer(writer_counter):
         fused_input = torch.cat((speed_input, target_point), dim=1)
         
         # forward propagation
-        accel_brake, steer = network(rgb_input, fused_input)
+        # accel_brake, steer = network(rgb_input, fused_input)
+        dnn_brake, offset_amount = network(rgb_input, fused_input)
 
         optimizer.zero_grad()
 
-        loss = calculate_action_loss(accel_brake, steer, control_input, criterion_throttle, criterion_steer)
+        # loss = calculate_action_loss(accel_brake, steer, control_input, criterion_throttle, criterion_steer)
+        loss = calculate_offset_loss(dnn_brake, offset_amount, control_input, criterion_brake, criterion_offset)
         loss.backward()
 
         optimizer.step()
@@ -81,11 +91,13 @@ def validator():
         fused_input = torch.cat((speed_input, target_point), dim=1)
         
         # forward propagation
-        accel_brake, steer = network(rgb_input, fused_input)
+        # accel_brake, steer = network(rgb_input, fused_input)
+        dnn_brake, offset_amount = network(rgb_input, fused_input)
 
         optimizer.zero_grad()
         
-        loss = calculate_action_loss(accel_brake, steer, control_input, criterion_throttle, criterion_steer)
+        # loss = calculate_action_loss(accel_brake, steer, control_input, criterion_throttle, criterion_steer)
+        loss = calculate_offset_loss(dnn_brake, offset_amount, control_input, criterion_brake, criterion_offset)
         loss.backward()
 
         optimizer.step()
@@ -175,11 +187,14 @@ if __name__ == "__main__":
     validation_dataset_loader = DataLoader(total_validation_data, batch_size=config.batch_size, shuffle=True, num_workers=0)
     
     # construct imitation learining agent object
-    network = ActionModel()
+    # network = ActionModel()
+    network = OffsetModel()
     
     # define loss criterions of actions
-    criterion_throttle = nn.CrossEntropyLoss()
-    criterion_steer = nn.MSELoss()
+    # criterion_throttle = nn.CrossEntropyLoss()
+    # criterion_steer = nn.MSELoss()
+    criterion_brake = nn.BCELoss()
+    criterion_offset = nn.MSELoss()
 
     # define network optimizer and learning rate scheduler
     optimizer = optim.SGD(network.parameters(), config.learning_rate, momentum=config.momentum)

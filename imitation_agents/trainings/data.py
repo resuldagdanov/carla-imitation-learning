@@ -11,7 +11,8 @@ class DatasetLoader(Dataset):
         self.root_dir = root_dir
         self.subfolder_paths = []
 
-        subfolders = ["rgb_front_60", "measurements"]
+        # subfolders = ["rgb_front_60", "measurements"]
+        subfolders = ["rgb_front", "measurements"]
 
         for subfolder in subfolders:
             self.subfolder_paths.append(os.path.join(self.root_dir, subfolder))
@@ -25,8 +26,10 @@ class DatasetLoader(Dataset):
         if torch.is_tensor(idx):
             idx = idx.tolist()
 
-        img_name = os.path.join(self.subfolder_paths[0],  "%05i.png" % idx)
-        meas_name = os.path.join(self.subfolder_paths[1],  "%05i.json" % idx)
+        # img_name = os.path.join(self.subfolder_paths[0],  "%05i.png" % idx)
+        # meas_name = os.path.join(self.subfolder_paths[1],  "%05i.json" % idx)
+        img_name = os.path.join(self.subfolder_paths[0],  "%04i.png" % idx)
+        meas_name = os.path.join(self.subfolder_paths[1],  "%04i.json" % idx)
 
         image = io.imread(img_name)
         image = np.array(image.transpose((2, 0, 1)), np.float32)
