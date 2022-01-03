@@ -14,8 +14,8 @@ time_info = current_date + "-" + current_time
 base_path = os.environ.get('BASE_CODE_PATH', None)
 
 # saved model's folder name and model name
-best_model_date = "brake_test"
-best_model_name = "epoch_90.pth"
+best_model_date = "offset_test"
+best_model_name = "epoch_2.pth"
 
 # inference model directory
 trained_model_path = base_path + "/checkpoints/models/" + best_model_date + "/" + best_model_name
@@ -34,7 +34,7 @@ selected_mode = agent_mode[0] # TODO: change if required
 save_data_path = base_path + "/datasets/" + selected_mode + "/" + time_info + "/"
 
 # display front image during data-aggregation
-debug = False
+debug = True
 
 # threshold values for dagger metric
 steer_metric_threshold = 0.4

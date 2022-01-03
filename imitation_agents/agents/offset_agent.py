@@ -136,13 +136,55 @@ class OffsetAgent(MapAgent):
         near_node, near_command = self._waypoint_planner.run_step(gps)
         far_node, far_command = self._command_planner.run_step(gps)
 
-        # get auto-pilot actions
-        steer, throttle, brake, target_speed = self._get_control(near_node, far_node, data)
+        # convert to local waypoint commands relative to ego agent
+        local_command_point = np.array([far_node[0] - gps[0], far_node[1] - gps[1]])
 
-        expert_control = carla.VehicleControl()
-        expert_control.steer = steer + 1e-2 * np.random.randn()
-        expert_control.throttle = throttle
-        expert_control.brake = float(brake)
+        # rotation matrix
+        R = np.array([
+            [np.cos(np.pi/2 + ego_theta), -np.sin(np.pi/2 + ego_theta)],
+            [np.sin(np.pi/2 + ego_theta),  np.cos(np.pi/2 + ego_theta)]
+            ])
+
+        # NOTE: is not used in traininig
+        # local_command_point = R.T.dot(local_command_point)
+
+        # concatenate vehicle velocity with local far waypoint commands
+        fused_inputs = np.zeros(3, dtype=np.float32)
+        fused_inputs[0] = speed
+        fused_inputs[1] = local_command_point[0]
+        fused_inputs[2] = local_command_point[1]
+
+        # get brake action and 90deg offset from network
+        dnn_brake, offset = self.agent.inference(cv_front_image, fused_inputs)
+
+        distance_2_near = np.array([near_node[0] - gps[0], near_node[1] - gps[1]])
+        distance_2_near = np.linalg.norm(distance_2_near)
+
+        # left: -, right: +
+        angle_rad = np.arctan2(offset, distance_2_near)
+
+        # assign new location for near node
+        new_near_node = [near_node[0] * np.sin(angle_rad) - near_node[1] * np.cos(angle_rad),
+                         near_node[0] * np.cos(angle_rad) + near_node[1] * np.sin(angle_rad)]
+
+        # get auto-pilot actions
+        steer, throttle, brake, target_speed = self._get_control(new_near_node, far_node, data)
+
+        if self.run_type is "dagger" or self.run_type is "inference":
+            if dnn_brake >= 0.5:
+                throttle = 0.0
+                brake = 1.0
+            else:
+                throttle = throttle
+                brake = 0.0
+
+        # network actions
+        self.current_control = carla.VehicleControl()
+        self.current_control.throttle = float(throttle)
+        self.current_control.steer = float(steer)
+        self.current_control.brake = float(brake)
+
+        print("Agent Actions:", round(self.current_control.throttle, 2), round(self.current_control.steer, 2), round(self.current_control.brake, 2))
 
         measurement_data = {
             'x': gps[0],
@@ -159,9 +201,9 @@ class OffsetAgent(MapAgent):
             'near_node_y': near_node[1],
             'near_command': near_command.value,
 
-            'steer': expert_control.steer,
-            'throttle': expert_control.throttle,
-            'brake': expert_control.brake,
+            'steer': self.current_control.steer,
+            'throttle': self.current_control.throttle,
+            'brake': self.current_control.brake,
 
             'weather_id': self.weather_id,
 
@@ -178,96 +220,34 @@ class OffsetAgent(MapAgent):
             'is_stop_sign_present': self.is_stop_sign_present
             }
 
-        # network actions
-        self.current_control = carla.VehicleControl()
-
-        # if dagger or test is running inference through network
-        if self.run_type is "dagger" or self.run_type is "inference":
-
-            ego_x = measurement_data['x']
-            ego_y = measurement_data['y']
-            
-            # get far node waypoints
-            x_command = measurement_data['x_command']
-            y_command = measurement_data['y_command']
-
-            # rotation matrix
-            R = np.array([
-                [np.cos(np.pi/2 + ego_theta), -np.sin(np.pi/2 + ego_theta)],
-                [np.sin(np.pi/2 + ego_theta),  np.cos(np.pi/2 + ego_theta)]
-                ])
-
-            # convert to local waypoint commands relative to ego agent
-            local_command_point = np.array([x_command - ego_x, y_command - ego_y])
-            local_command_point = R.T.dot(local_command_point)
-
-            # concatenate vehicle velocity with local far waypoint commands
-            fused_inputs = np.zeros(3, dtype=np.float32)
-            fused_inputs[0] = measurement_data['speed']
-            fused_inputs[1] = local_command_point[0]
-            fused_inputs[2] = local_command_point[1]
-
-            # get brake action from network
-            accel_brake, steer = self.agent.inference(cv_front_image, fused_inputs)
-
-            if accel_brake > 0.0:
-                throttle = accel_brake
-                brake = 0.0
-            else:
-                throttle = 0.0
-                brake = 1.0
-
-            self.current_control.throttle = float(throttle)
-            self.current_control.steer = float(steer)
-            self.current_control.brake = float(brake)
-
         # only auto pilot is used
         if self.run_type is "autopilot":
-
-            print("Expert Actions:", round(expert_control.throttle, 2), round(expert_control.steer, 2), round(expert_control.brake, 2))
             
             # save dataset and return expert control
             if self.save_autopilot is True:
                 self.check_and_save(image_list, measurement_data)
 
-            applied_control = expert_control
-            
         # use pre-trained imitation learning agent and compare with auto-pilot
         elif self.run_type is "dagger":
 
             # inference or dagger mode calculate the metric
-            dagger_metric = self.check_dagger_brake_metric(expert_control.brake, self.current_control.brake)
-
-            print("Expert Actions:", round(expert_control.throttle, 2), round(expert_control.steer, 2), round(expert_control.brake, 2), \
-                 " Agent Actions:", round(self.current_control.throttle, 2), round(self.current_control.steer, 2), round(self.current_control.brake, 2), " DAgger:", dagger_metric)
+            dagger_metric = self.check_dagger_brake_metric(self.expert_brake, self.current_control.brake) # TODO: check if expert_brake is not same as applied brake due to assignments
 
             if dagger_metric:
                 if self.debug:
                     disp_front_image = cv2.putText(disp_front_image, "Auto-Pilot", (0, 25), fontFace=cv2.FONT_HERSHEY_COMPLEX, fontScale=1, color=(0, 0, 255))
 
                 # make sure that throttle is uneffective while braking
-                if expert_control.brake:
-                    expert_control.steer *= 0.5
-                    expert_control.throttle = 0.0
+                if self.expert_brake:
+                    self.current_control.steer *= 0.5
+                    self.current_control.throttle = 0.0
 
                 if self.save_autopilot is True:
                     self.check_and_save(image_list, measurement_data)
 
-                applied_control = expert_control
-
             else:
                 if self.debug:
                     disp_front_image = cv2.putText(disp_front_image, "Agent", (0, 25), fontFace=cv2.FONT_HERSHEY_COMPLEX, fontScale=1, color=(0, 0, 255))
-
-                applied_control = self.current_control
-
-        elif self.run_type is "inference":
-            print("Agent Actions:", round(self.current_control.throttle, 2), round(self.current_control.steer, 2), round(self.current_control.brake, 2))
-
-            applied_control = self.current_control
-        
-        else:
-            print("Error in Agent Mode ! Should be one of the following: ", configs.agent_mode)
 
         if self.debug is True:
             cv2.imshow("rgb-front-FOV-60", disp_front_image)
@@ -276,7 +256,7 @@ class OffsetAgent(MapAgent):
             cv2.imshow("rgb-right-FOV-100", disp_right_image)
             cv2.waitKey(1)
 
-        return applied_control
+        return self.current_control
 
     def dataset_save(self, rgb, measurement_data):
         for i in range(len(self.subfolder_paths) - 1):
@@ -348,15 +328,11 @@ class OffsetAgent(MapAgent):
         throttle = self._speed_controller.step(delta)
         throttle = np.clip(throttle, 0.0, 0.75)
 
-        if self.run_type is "autopilot" or self.run_type is "dagger" or self.run_type is "inference":
-            brake = self._should_brake()
+        brake = self._should_brake()
+        self.expert_brake = brake
 
-            if brake:
-                throttle = 0.0
-            else:
-                pass
-        else:
-            brake = 0.0
+        if brake:
+            throttle = 0.0
 
         self.should_slow = int(should_slow)
         self.should_brake = int(brake)

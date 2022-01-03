@@ -19,7 +19,7 @@ export REPETITIONS=1
 # TODO: change the following exports
 # ------------------------------------------------------------------------------------------------------ #
 export BASE_CODE_PATH=~/Research/Codes/Carla/carla-imitation-learning
-export TEAM_AGENT=${BASE_CODE_PATH}/imitation_agents/agents/waypoint_agent.py
+export TEAM_AGENT=${BASE_CODE_PATH}/imitation_agents/agents/offset_agent.py
 export TEAM_CONFIG=${BASE_CODE_PATH}/checkpoints/models
 export ROUTES=${BASE_CODE_PATH}/data/routes/routes_town01_tiny.xml
 export SCENARIOS=${BASE_CODE_PATH}/data/scenarios/all_towns_traffic_scenarios_general.json
