@@ -10,24 +10,24 @@ current_time = str(now.strftime("%H_%M_%S"))
 time_info = current_date + "-" + current_time
 
 # path of main repository
-# base_path = "/home/resul/Research/Codes/Carla/carla-imitation-learning" # Local
-base_path = "/cta/users/mdal2/ea202101001_platooning_demo/trainings" # WorkStation
+base_path = "/home/resul/Research/Codes/Carla/carla-imitation-learning" # Local
+# base_path = "/cta/users/mdal2/ea202101001_platooning_demo/trainings" # WorkStation
 
 # dataset for imitation learning (training)
-# training_data_path = base_path + "/datasets/autopilot/" # Local
+training_data_path = base_path + "/datasets/autopilot/" # Local
 # training_data_path = "/cta/eatron/CarlaDatasets/Autopilot/Extracks/" # WorkStation
-training_data_path = "/cta/eatron/CarlaChallenge/TransFuser/data/14_weathers_data/" # WorkStation
+# training_data_path = "/cta/eatron/CarlaChallenge/TransFuser/data/14_weathers_data/" # WorkStation
 
 # dataset for imitation learning (validation)
-# validation_data_path = base_path + "/datasets/autopilot/" # Local
+validation_data_path = base_path + "/datasets/autopilot/" # Local
 # validation_data_path = "/cta/eatron/CarlaDatasets/Autopilot/Extracks/" # WorkStation
-validation_data_path = "/cta/eatron/CarlaChallenge/TransFuser/data/14_weathers_data/" # WorkStation
+# validation_data_path = "/cta/eatron/CarlaChallenge/TransFuser/data/14_weathers_data/" # WorkStation
 
 # aggregated data path. will be concatenated with training dataset
-# dagger_data_path = base_path + "/datasets/dagger/" # Local
-dagger_data_path = "/cta/eatron/CarlaDatasets/DAgger/Extracks/" # WorkStation
+dagger_data_path = base_path + "/datasets/dagger/" # Local
+# dagger_data_path = "/cta/eatron/CarlaDatasets/DAgger/Extracks/" # WorkStation
 
-# train_towns = ["Town01_Short"] # Local
+train_towns = ["Town01_Short"] # Local
 # train_towns = [ # WorkStation
 #         "Town01_Long", "Town01_Short", \
 #         "Town02_Long", "Town02_Short", \
@@ -35,19 +35,19 @@ dagger_data_path = "/cta/eatron/CarlaDatasets/DAgger/Extracks/" # WorkStation
 #         "Town04_Long", "Town04_Short", \
 #         "Town05_Long", "Town05_Short", \
 #                        "Town10_Short"]
-train_towns = [ # WorkStation
-        "Town01_long", "Town01_short", "Town01_tiny", \
-        "Town02_long", "Town02_short", "Town02_tiny", \
-        "Town03_long", "Town03_short", "Town03_tiny", \
-        "Town04_long", "Town04_short", "Town04_tiny", \
-                        "Town05_short", "Town05_tiny", \
-        "Town06_long", "Town06_short", "Town06_tiny", \
-                        "Town07_short", "Town07_tiny",\
-                        "Town10_short", "Town10_tiny"]
+# train_towns = [ # WorkStation
+#         "Town01_long", "Town01_short", "Town01_tiny", \
+#         "Town02_long", "Town02_short", "Town02_tiny", \
+#         "Town03_long", "Town03_short", "Town03_tiny", \
+#         "Town04_long", "Town04_short", "Town04_tiny", \
+#                         "Town05_short", "Town05_tiny", \
+#         "Town06_long", "Town06_short", "Town06_tiny", \
+#                         "Town07_short", "Town07_tiny",\
+#                         "Town10_short", "Town10_tiny"]
 
-# validation_towns = ["Town01_Short"] # Local
+validation_towns = ["Town01_Short"] # Local
 # validation_towns = ["Town03_Long_x"] # WorkStation
-validation_towns = ["Town05_long"] # WorkStation
+# validation_towns = ["Town05_long"] # WorkStation
 
 # whether to aggregate dagger data to training dataset
 use_dagger_data = False

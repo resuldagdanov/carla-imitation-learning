@@ -21,8 +21,9 @@ def calculate_action_loss(throttle, steer, gt, criterion_throttle, criterion_ste
 
 
 def calculate_offset_loss(dnn_brake, offset_amount, gt, criterion_brake, criterion_offset):
+    dnn_brake[dnn_brake != dnn_brake] = 0.0
     brake_loss = criterion_brake(dnn_brake, gt[:, 2].view(-1, 1))
-    offset_loss = criterion_offset(offset_amount, np.zeros(len(gt[:, 2])))
+    offset_loss = criterion_offset(offset_amount, torch.zeros(len(gt[:, 2]), device=device).view(-1,1))
 
     return brake_loss + offset_loss
 
@@ -203,8 +204,8 @@ if __name__ == "__main__":
     if config.pretrained is True:
         network.load_state_dict(torch.load(config.trained_model_path))
 
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    #device = torch.device('cpu')
+    #device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    device = torch.device('cpu')
 
     network.to(device)
     print("Training Device: ", device)
@@ -216,6 +217,7 @@ if __name__ == "__main__":
     for epoch in range(config.max_number_of_epochs):
 
         epoch_loss_train, writer_counter = trainer(writer_counter)
+        epoch_loss_validation = 0.0 
 
         # save model periodically
         if epoch % config.save_every_n_epoch == 0:

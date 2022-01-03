@@ -57,7 +57,7 @@ class OffsetAgent(MapAgent):
 
         # init agent
         if self.run_type is "dagger" or self.run_type is "inference":
-            self.agent = WaypointModel()
+            self.agent = OffsetModel()
             # self.agent.to(self.agent.device)
 
         if self.run_type is "autopilot" or self.run_type is "dagger":

@@ -11,8 +11,8 @@ class DatasetLoader(Dataset):
         self.root_dir = root_dir
         self.subfolder_paths = []
 
-        # subfolders = ["rgb_front_60", "measurements"]
-        subfolders = ["rgb_front", "measurements"]
+        subfolders = ["rgb_front_60", "measurements"]
+        # subfolders = ["rgb_front", "measurements"]
 
         for subfolder in subfolders:
             self.subfolder_paths.append(os.path.join(self.root_dir, subfolder))
@@ -26,10 +26,10 @@ class DatasetLoader(Dataset):
         if torch.is_tensor(idx):
             idx = idx.tolist()
 
-        # img_name = os.path.join(self.subfolder_paths[0],  "%05i.png" % idx)
-        # meas_name = os.path.join(self.subfolder_paths[1],  "%05i.json" % idx)
-        img_name = os.path.join(self.subfolder_paths[0],  "%04i.png" % idx)
-        meas_name = os.path.join(self.subfolder_paths[1],  "%04i.json" % idx)
+        img_name = os.path.join(self.subfolder_paths[0],  "%05i.png" % idx)
+        meas_name = os.path.join(self.subfolder_paths[1],  "%05i.json" % idx)
+        # img_name = os.path.join(self.subfolder_paths[0],  "%04i.png" % idx)
+        # meas_name = os.path.join(self.subfolder_paths[1],  "%04i.json" % idx)
 
         image = io.imread(img_name)
         image = np.array(image.transpose((2, 0, 1)), np.float32)
@@ -59,7 +59,14 @@ class DatasetLoader(Dataset):
 
         # convert far nodes to relative local waypoints
         local_command_point = np.array([x_command - ego_x, y_command - ego_y])
-        local_command_point = R.T.dot(local_command_point)
+        
+        # TODO: check whetehr necessary, because sometimes theta values could get nan so the network input's some values as a result
+        # local_command_point = R.T.dot(local_command_point)
+
+        if meas_json['brake']:
+            meas_json['brake'] = 1.0
+        else:
+            meas_json['brake'] = 0.0
 
         sample = {
             "image": image,

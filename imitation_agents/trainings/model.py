@@ -2,6 +2,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torchvision
+import numpy as np
 
 
 class ActionModel(nn.Module):
@@ -67,8 +68,6 @@ class OffsetModel(nn.Module):
     def __init__(self):
         super().__init__()
 
-        self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-
         # front RGB part import ResNet-50
         self.front_rgb_backbone = torchvision.models.resnet50(pretrained=True)
 
@@ -124,5 +123,8 @@ class OffsetModel(nn.Module):
 
         dnn_brake = self.brake_classifier_out(features_out)
         offset_amount = self.waypoint_offset_out(features_out)
+
+        offset_amount = offset_amount.clamp(-1, 1)
+        dnn_brake = dnn_brake.clamp(0, 1)
 
         return dnn_brake, offset_amount

@@ -66,6 +66,9 @@ class OffsetModel(nn.Module):
         dnn_brake = self.brake_classifier_out(features_out)
         offset_amount = self.waypoint_offset_out(features_out)
 
+        offset_amount = offset_amount.clamp(-1, 1)
+        dnn_brake = dnn_brake.clamp(0, 1)
+
         return dnn_brake, offset_amount
 
     def inference(self, image, fused_inputs):
