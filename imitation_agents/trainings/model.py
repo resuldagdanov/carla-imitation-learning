@@ -72,10 +72,16 @@ class OffsetModel(nn.Module):
         self.front_rgb_backbone = torchvision.models.resnet50(pretrained=True)
 
         # remove last layer of front RGB of ResNet-50
-        self.front_rgb_backbone.fc = nn.Linear(2048, 512, bias=True)
+        self.front_rgb_backbone.fc = nn.Sequential(
+            nn.Linear(2048, 512),
+            nn.ReLU()
+        )
 
         # encoder for fused inputs
-        self.waypoint_fuser = nn.Linear(3, 128, bias=True)
+        self.waypoint_fuser = nn.Sequential(
+            nn.Linear(3, 128),
+            nn.ReLU()
+        )
 
         # encoder part will be freezed during RL training
         self.mlp_encoder_network = nn.Sequential(
@@ -88,17 +94,17 @@ class OffsetModel(nn.Module):
         )
 
         # output networks -> will be unfreezed in RL training and pre-trained again in RL part
-        self.waypoint_offset_out = nn.Sequential(
-            nn.Linear(64, 64),
-            nn.ReLU(),
-            nn.Linear(64, 1),
-            nn.Tanh()
-        )
         self.brake_classifier_out = nn.Sequential(
             nn.Linear(64, 64),
             nn.ReLU(),
             nn.Linear(64, 1),
             nn.Sigmoid()
+        )
+        self.waypoint_offset_out = nn.Sequential(
+            nn.Linear(64, 64),
+            nn.ReLU(),
+            nn.Linear(64, 1),
+            nn.Tanh()
         )
 
     def normalize_rgb(self, x):
@@ -110,10 +116,10 @@ class OffsetModel(nn.Module):
 
     def forward(self, fronts, fused_input):
         # pre-trained ResNet backbone
-        front_rgb_features = torch.relu(self.front_rgb_backbone(fronts))
+        front_rgb_features = self.front_rgb_backbone(fronts)
         
         # fuse velocity and relative far waypoints
-        fused_features = torch.relu(self.waypoint_fuser(fused_input.float()))
+        fused_features = self.waypoint_fuser(fused_input.float())
 
         # concatenate rgb and fused features
         mid_features = torch.cat((front_rgb_features, fused_features), dim=1)

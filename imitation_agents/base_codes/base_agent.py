@@ -21,9 +21,7 @@ class BaseAgent(autonomous_agent.AutonomousAgent):
         self._sensor_data = {
             'width': 400,
             'height': 300,
-            'high_fov': 100,
-            'mid_fov': 60,
-            'low_fov': 45
+            'fov': 100
         }
 
     def _init(self):
@@ -41,74 +39,12 @@ class BaseAgent(autonomous_agent.AutonomousAgent):
 
     def sensors(self):
         return [
-                # {
-                #     'type': 'sensor.camera.rgb',
-                #     'x': 1.3, 'y': 0.0, 'z': 2.3,
-                #     'roll': 0.0, 'pitch': 0.0, 'yaw': 0.0,
-                #     'width': self._sensor_data['width'], 'height': self._sensor_data['height'], 'fov': self._sensor_data['high_fov'],
-                #     'id': 'rgb_front_100'
-                #     },
                 {
                     'type': 'sensor.camera.rgb',
                     'x': 1.3, 'y': 0.0, 'z': 2.3,
                     'roll': 0.0, 'pitch': 0.0, 'yaw': 0.0,
-                    'width': self._sensor_data['width'], 'height': self._sensor_data['height'], 'fov': self._sensor_data['mid_fov'],
-                    'id': 'rgb_front_60'
-                    },
-                {
-                    'type': 'sensor.camera.rgb',
-                    'x': -1.3, 'y': 0.0, 'z': 2.3,
-                    'roll': 0.0, 'pitch': 0.0, 'yaw': -180.0,
-                    'width': self._sensor_data['width'], 'height': self._sensor_data['height'], 'fov': self._sensor_data['high_fov'],
-                    'id': 'rgb_rear_100'
-                    },
-                # {
-                #     'type': 'sensor.camera.rgb',
-                #     'x': -1.3, 'y': 0.0, 'z': 2.3,
-                #     'roll': 0.0, 'pitch': 0.0, 'yaw': -180.0,
-                #     'width': self._sensor_data['width'], 'height': self._sensor_data['height'], 'fov': self._sensor_data['mid_fov'],
-                #     'id': 'rgb_rear_60'
-                #     },
-                {
-                    'type': 'sensor.camera.rgb',
-                    'x': 1.3, 'y': 0.0, 'z': 2.3,
-                    'roll': 0.0, 'pitch': 0.0, 'yaw': -60.0,
-                    'width': self._sensor_data['width'], 'height': self._sensor_data['height'], 'fov': self._sensor_data['high_fov'],
-                    'id': 'rgb_left_100'
-                    },
-                # {
-                #     'type': 'sensor.camera.rgb',
-                #     'x': 1.3, 'y': 0.0, 'z': 2.3,
-                #     'roll': 0.0, 'pitch': 0.0, 'yaw': -60.0,
-                #     'width': self._sensor_data['width'], 'height': self._sensor_data['height'], 'fov': self._sensor_data['mid_fov'],
-                #     'id': 'rgb_left_60'
-                #     },
-                {
-                    'type': 'sensor.camera.rgb',
-                    'x': 1.3, 'y': 0.0, 'z': 2.3,
-                    'roll': 0.0, 'pitch': 0.0, 'yaw': 60.0,
-                    'width': self._sensor_data['width'], 'height': self._sensor_data['height'], 'fov': self._sensor_data['high_fov'],
-                    'id': 'rgb_right_100'
-                    },
-                # {
-                #     'type': 'sensor.camera.rgb',
-                #     'x': 1.3, 'y': 0.0, 'z': 2.3,
-                #     'roll': 0.0, 'pitch': 0.0, 'yaw': 60.0,
-                #     'width': self._sensor_data['width'], 'height': self._sensor_data['height'], 'fov': self._sensor_data['mid_fov'],
-                #     'id': 'rgb_right_60'
-                #     },
-                {   
-                    'type': 'sensor.lidar.ray_cast',
-                    'x': 1.3, 'y': 0.0, 'z': 2.5,
-                    'roll': 0.0, 'pitch': 0.0, 'yaw': -90.0,
-                    'id': 'lidar'
-                    },
-                {
-                    'type': 'sensor.other.radar',
-                    'x': 1.3, 'y': 0.0, 'z': 2.5,
-                    'roll': 0.0, 'pitch': 0.0, 'yaw': -90.0,
-                    'fov': 30, 'range': 50,
-                    'id': 'radar'
+                    'width': self._sensor_data['width'], 'height': self._sensor_data['height'], 'fov': self._sensor_data['fov'],
+                    'id': 'rgb_front'
                     },
                 {
                     'type': 'sensor.other.imu',
@@ -136,42 +72,16 @@ class BaseAgent(autonomous_agent.AutonomousAgent):
 
         affordances = self._get_affordances()
 
-        # rgb_front_100 = cv2.cvtColor(input_data['rgb_front_100'][1][:, :, :3], cv2.COLOR_BGR2RGB)
-        rgb_front_60 = cv2.cvtColor(input_data['rgb_front_60'][1][:, :, :3], cv2.COLOR_BGR2RGB)
+        rgb_front = cv2.cvtColor(input_data['rgb_front'][1][:, :, :3], cv2.COLOR_BGR2RGB)
 
-        rgb_rear_100 = cv2.cvtColor(input_data['rgb_rear_100'][1][:, :, :3], cv2.COLOR_BGR2RGB)
-        # rgb_rear_60 = cv2.cvtColor(input_data['rgb_rear_60'][1][:, :, :3], cv2.COLOR_BGR2RGB)
-
-        rgb_left_100 = cv2.cvtColor(input_data['rgb_left_100'][1][:, :, :3], cv2.COLOR_BGR2RGB)
-        # rgb_left_60 = cv2.cvtColor(input_data['rgb_left_60'][1][:, :, :3], cv2.COLOR_BGR2RGB)
-
-        rgb_right_100 = cv2.cvtColor(input_data['rgb_right_100'][1][:, :, :3], cv2.COLOR_BGR2RGB)
-        # rgb_right_60 = cv2.cvtColor(input_data['rgb_right_60'][1][:, :, :3], cv2.COLOR_BGR2RGB)
-        
         gps = input_data['gps'][1][:2]
         speed = input_data['speed'][1]['speed']
         compass = input_data['imu'][1][-1]
 
-        lidar = input_data['lidar'][1]
-        radar = input_data['radar'][1]
-
         weather = self._weather_to_dict(self._world.get_weather())
 
         return {
-            # 'rgb_front_100': rgb_front_100,
-            'rgb_front_60': rgb_front_60,
-
-            'rgb_rear_100': rgb_rear_100,
-            # 'rgb_rear_60': rgb_rear_60,
-            
-            'rgb_left_100': rgb_left_100,
-            # 'rgb_left_60': rgb_left_60,
-
-            'rgb_right_100': rgb_right_100,
-            # 'rgb_right_60': rgb_right_60,
-
-            'lidar' : lidar,
-            'radar' : radar,
+            'rgb_front': rgb_front,
 
             'gps': gps,
             'speed': speed,
@@ -388,5 +298,5 @@ class BaseAgent(autonomous_agent.AutonomousAgent):
         calibration = np.identity(3)
         calibration[0, 2] = sensor["width"] / 2.0
         calibration[1, 2] = sensor["height"] / 2.0
-        calibration[0, 0] = calibration[1, 1] = sensor["width"] / (2.0 * np.tan(sensor["mid_fov"] * np.pi / 360.0))
+        calibration[0, 0] = calibration[1, 1] = sensor["width"] / (2.0 * np.tan(sensor["fov"] * np.pi / 360.0))
         return calibration

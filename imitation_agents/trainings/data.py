@@ -63,11 +63,6 @@ class DatasetLoader(Dataset):
         # TODO: check whetehr necessary, because sometimes theta values could get nan so the network input's some values as a result
         # local_command_point = R.T.dot(local_command_point)
 
-        if meas_json['brake']:
-            meas_json['brake'] = 1.0
-        else:
-            meas_json['brake'] = 0.0
-
         sample = {
             "image": image,
             "velocity": np.array([meas_json['speed']], np.float32),

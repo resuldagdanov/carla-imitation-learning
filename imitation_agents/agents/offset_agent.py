@@ -4,6 +4,7 @@ import cv2
 import random
 import carla
 import numpy as np
+import torch
 from imitation_agents.base_codes.map_agent import MapAgent
 from imitation_agents.base_codes.pid_controller import PIDController
 from imitation_agents.utils import base_utils, configs
@@ -50,16 +51,13 @@ class OffsetAgent(MapAgent):
         self.autopilot_setup()
 
         if self.debug is True:
-            cv2.namedWindow("rgb-front-FOV-60")
-            cv2.namedWindow("rgb-rear-FOV-100")
-            cv2.namedWindow("rgb-left-FOV-100")
-            cv2.namedWindow("rgb-right-FOV-100")
+            cv2.namedWindow("rgb-front")
 
         # init agent
         if self.run_type == "dagger" or self.run_type == "inference":
             self.agent = OffsetModel()
-            # self.agent.to(self.agent.device)
-
+            self.agent.load_state_dict(torch.load(configs.trained_model_path))
+            
         if self.run_type == "autopilot" or self.run_type == "dagger":
             self.init_dataset(output_dir=self.dataset_save_path)
 
@@ -84,10 +82,7 @@ class OffsetAgent(MapAgent):
         self.data_count = 0
 
         subfolders = [
-            "rgb_front_60",
-            "rgb_rear_100",
-            "rgb_left_100",
-            "rgb_right_100",
+            "rgb_front",
             "measurements"]
 
         for subfolder in subfolders:
@@ -112,25 +107,13 @@ class OffsetAgent(MapAgent):
         else:
             ego_theta = data['compass']
 
-        rgb_front_image = data['rgb_front_60'][:, :, :3]
+        rgb_front_image = data['rgb_front']
         cv_front_image = rgb_front_image[:, :, ::-1]
 
-        rgb_rear_image = data['rgb_rear_100'][:, :, :3]
-        cv_rear_image = rgb_rear_image[:, :, ::-1]
-
-        rgb_left_image = data['rgb_left_100'][:, :, :3]
-        cv_left_image = rgb_left_image[:, :, ::-1]
-
-        rgb_right_image = data['rgb_right_100'][:, :, :3]
-        cv_right_image = rgb_right_image[:, :, ::-1]
-
-        image_list = [cv_front_image, cv_rear_image, cv_left_image, cv_right_image]
+        image_list = [cv_front_image]
 
         if self.debug is True:
             disp_front_image = cv2.UMat(cv_front_image)
-            disp_rear_image = cv2.UMat(cv_rear_image)
-            disp_left_image = cv2.UMat(cv_left_image)
-            disp_right_image = cv2.UMat(cv_right_image)
 
         # get near and far waypoints from route planners
         near_node, near_command = self._waypoint_planner.run_step(gps)
@@ -161,15 +144,14 @@ class OffsetAgent(MapAgent):
         new_near_node = self.shift_point(ego_compass=ego_theta, ego_gps=gps, near_node=near_node, offset_amount=offset)
 
         # get auto-pilot actions
-        steer, throttle, brake, target_speed = self._get_control(new_near_node, far_node, data)
+        steer, throttle, target_speed = self._get_control(new_near_node, far_node, data)
 
-        if self.run_type == "dagger" or self.run_type == "inference":
-            if dnn_brake >= 0.5:
-                throttle = 0.0
-                brake = 1.0
-            else:
-                throttle = throttle
-                brake = 0.0
+        if dnn_brake:
+            throttle = 0.0
+            brake = 1.0
+        else:
+            throttle = throttle
+            brake = 0.0
 
         # network actions
         self.current_control = carla.VehicleControl()
@@ -177,7 +159,7 @@ class OffsetAgent(MapAgent):
         self.current_control.steer = float(steer)
         self.current_control.brake = float(brake)
 
-        print("Agent Actions:", round(self.current_control.throttle, 2), round(self.current_control.steer, 2), round(self.current_control.brake, 2))
+        print("Agent Actions:", round(self.current_control.throttle, 2), round(self.current_control.steer, 2), round(self.current_control.brake, 2), " Agent Brake:", dnn_brake, " Agent Offset:", offset)
 
         measurement_data = {
             'x': gps[0],
@@ -200,17 +182,9 @@ class OffsetAgent(MapAgent):
 
             'weather_id': self.weather_id,
 
-            'should_slow': self.should_slow,
-            'should_brake': self.should_brake,
-
             'angle': self.angle,
             'angle_unnorm': self.angle_unnorm,
-            'angle_far_unnorm': self.angle_far_unnorm,
-
-            'is_vehicle_present': self.is_vehicle_present,
-            'is_pedestrian_present': self.is_pedestrian_present,
-            'is_red_light_present': self.is_red_light_present,
-            'is_stop_sign_present': self.is_stop_sign_present
+            'angle_far_unnorm': self.angle_far_unnorm
             }
 
         # only auto pilot is used
@@ -243,10 +217,7 @@ class OffsetAgent(MapAgent):
                     disp_front_image = cv2.putText(disp_front_image, "Agent", (0, 25), fontFace=cv2.FONT_HERSHEY_COMPLEX, fontScale=1, color=(0, 0, 255))
 
         if self.debug is True:
-            cv2.imshow("rgb-front-FOV-60", disp_front_image)
-            cv2.imshow("rgb-rear-FOV-100", disp_rear_image)
-            cv2.imshow("rgb-left-FOV-100", disp_left_image)
-            cv2.imshow("rgb-right-FOV-100", disp_right_image)
+            cv2.imshow("rgb-front", disp_front_image)
             cv2.waitKey(1)
 
         return self.current_control
@@ -345,19 +316,11 @@ class OffsetAgent(MapAgent):
         throttle = self._speed_controller.step(delta)
         throttle = np.clip(throttle, 0.0, 0.75)
 
-        brake = self._should_brake()
-        self.expert_brake = brake
-
-        if brake:
-            throttle = 0.0
-
-        self.should_slow = int(should_slow)
-        self.should_brake = int(brake)
         self.angle = angle
         self.angle_unnorm = angle_unnorm
         self.angle_far_unnorm = angle_far_unnorm
 
-        return steer, throttle, brake, target_speed
+        return steer, throttle, target_speed
 
     def _change_weather(self):
         if self.weather_counter % self.weather_change_interval == 0:

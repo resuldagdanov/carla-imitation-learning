@@ -21,7 +21,7 @@ def calculate_action_loss(throttle, steer, gt, criterion_throttle, criterion_ste
 
 
 def calculate_offset_loss(dnn_brake, offset_amount, gt, criterion_brake, criterion_offset):
-    dnn_brake[dnn_brake != dnn_brake] = 0.0
+    # dnn_brake[dnn_brake != dnn_brake] = 0.0
     brake_loss = criterion_brake(dnn_brake, gt[:, 2].view(-1, 1))
     offset_loss = criterion_offset(offset_amount, torch.zeros(len(gt[:, 2]), device=device).view(-1, 1))
 

@@ -15,7 +15,7 @@ base_path = os.environ.get('BASE_CODE_PATH', None)
 
 # saved model's folder name and model name
 best_model_date = "offset_test"
-best_model_name = "epoch_2.pth"
+best_model_name = "epoch_9.pth"
 
 # inference model directory
 trained_model_path = base_path + "/checkpoints/models/" + best_model_date + "/" + best_model_name
@@ -51,7 +51,7 @@ manual_autopilot = False
 red_wait_limit = 40
 
 # weather condition will change randomly every 10 steps
-weather_change_interval = 10
+weather_change_interval = 1000
 
 # making sure that the base repo directory exists
 if not os.path.exists(base_path):
