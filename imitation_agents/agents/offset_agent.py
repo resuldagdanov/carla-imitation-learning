@@ -56,11 +56,11 @@ class OffsetAgent(MapAgent):
             cv2.namedWindow("rgb-right-FOV-100")
 
         # init agent
-        if self.run_type is "dagger" or self.run_type is "inference":
+        if self.run_type == "dagger" or self.run_type == "inference":
             self.agent = OffsetModel()
             # self.agent.to(self.agent.device)
 
-        if self.run_type is "autopilot" or self.run_type is "dagger":
+        if self.run_type == "autopilot" or self.run_type == "dagger":
             self.init_dataset(output_dir=self.dataset_save_path)
 
     def init_auto_pilot(self):
@@ -157,20 +157,13 @@ class OffsetAgent(MapAgent):
         # get brake action and 90deg offset from network
         dnn_brake, offset = self.agent.inference(cv_front_image, fused_inputs)
 
-        distance_2_near = np.array([near_node[0] - gps[0], near_node[1] - gps[1]])
-        distance_2_near = np.linalg.norm(distance_2_near)
-
         # left: -, right: +
-        angle_rad = np.arctan2(offset, distance_2_near)
-
-        # assign new location for near node
-        new_near_node = [near_node[0] * np.sin(angle_rad) - near_node[1] * np.cos(angle_rad),
-                         near_node[0] * np.cos(angle_rad) + near_node[1] * np.sin(angle_rad)]
+        new_near_node = self.shift_point(ego_compass=ego_theta, ego_gps=gps, near_node=near_node, offset_amount=offset)
 
         # get auto-pilot actions
         steer, throttle, brake, target_speed = self._get_control(new_near_node, far_node, data)
 
-        if self.run_type is "dagger" or self.run_type is "inference":
+        if self.run_type == "dagger" or self.run_type == "inference":
             if dnn_brake >= 0.5:
                 throttle = 0.0
                 brake = 1.0
@@ -221,14 +214,14 @@ class OffsetAgent(MapAgent):
             }
 
         # only auto pilot is used
-        if self.run_type is "autopilot":
+        if self.run_type == "autopilot":
             
             # save dataset and return expert control
             if self.save_autopilot is True:
                 self.check_and_save(image_list, measurement_data)
 
         # use pre-trained imitation learning agent and compare with auto-pilot
-        elif self.run_type is "dagger":
+        elif self.run_type == "dagger":
 
             # inference or dagger mode calculate the metric
             dagger_metric = self.check_dagger_brake_metric(self.expert_brake, self.current_control.brake) # TODO: check if expert_brake is not same as applied brake due to assignments
@@ -257,6 +250,30 @@ class OffsetAgent(MapAgent):
             cv2.waitKey(1)
 
         return self.current_control
+
+    def shift_point(self, ego_compass, ego_gps, near_node, offset_amount):
+        # rotation matrix
+        R = np.array([
+            [np.cos(np.pi / 2 + ego_compass), -np.sin(np.pi / 2 + ego_compass)],
+            [np.sin(np.pi / 2 + ego_compass), np.cos(np.pi / 2 + ego_compass)]
+        ])
+
+        # transpose of rotation matrix
+        trans_R = R.T
+
+        local_command_point = np.array([near_node[0] - ego_gps[0], near_node[1] - ego_gps[1]])
+        local_command_point = trans_R.dot(local_command_point)
+
+        # positive offset shifts near node to right; negative offset shifts near node to left
+        local_command_point[0] += offset_amount
+        local_command_point[1] += 0
+
+        new_near_node = np.linalg.inv(trans_R).dot(local_command_point)
+
+        new_near_node[0] += ego_gps[0]
+        new_near_node[1] += ego_gps[1]
+
+        return new_near_node
 
     def dataset_save(self, rgb, measurement_data):
         for i in range(len(self.subfolder_paths) - 1):
