@@ -57,6 +57,7 @@ class OffsetAgent(MapAgent):
         if self.run_type == "dagger" or self.run_type == "inference":
             self.agent = OffsetModel()
             self.agent.load_state_dict(torch.load(configs.trained_model_path))
+            self.agent.eval()
             
         if self.run_type == "autopilot" or self.run_type == "dagger":
             self.init_dataset(output_dir=self.dataset_save_path)
@@ -121,15 +122,6 @@ class OffsetAgent(MapAgent):
 
         # convert to local waypoint commands relative to ego agent
         local_command_point = np.array([far_node[0] - gps[0], far_node[1] - gps[1]])
-
-        # rotation matrix
-        R = np.array([
-            [np.cos(np.pi/2 + ego_theta), -np.sin(np.pi/2 + ego_theta)],
-            [np.sin(np.pi/2 + ego_theta),  np.cos(np.pi/2 + ego_theta)]
-            ])
-
-        # NOTE: is not used in traininig
-        # local_command_point = R.T.dot(local_command_point)
 
         # concatenate vehicle velocity with local far waypoint commands
         fused_inputs = np.zeros(3, dtype=np.float32)

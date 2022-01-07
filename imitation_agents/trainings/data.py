@@ -51,18 +51,9 @@ class DatasetLoader(Dataset):
         x_command = meas_json['x_command']
         y_command = meas_json['y_command']
 
-        # rotation matrix
-        R = np.array([
-            [np.cos(np.pi/2 + ego_theta), -np.sin(np.pi/2 + ego_theta)],
-            [np.sin(np.pi/2 + ego_theta),  np.cos(np.pi/2 + ego_theta)]
-            ])
-
         # convert far nodes to relative local waypoints
         local_command_point = np.array([x_command - ego_x, y_command - ego_y])
         
-        # TODO: check whetehr necessary, because sometimes theta values could get nan so the network input's some values as a result
-        # local_command_point = R.T.dot(local_command_point)
-
         sample = {
             "image": image,
             "velocity": np.array([meas_json['speed']], np.float32),
