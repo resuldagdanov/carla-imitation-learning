@@ -151,7 +151,7 @@ class OffsetAgent(MapAgent):
         self.current_control.steer = float(steer)
         self.current_control.brake = float(brake)
 
-        print("Agent Actions:", round(self.current_control.throttle, 2), round(self.current_control.steer, 2), round(self.current_control.brake, 2), " Agent Brake:", dnn_brake, " Agent Offset:", offset)
+        print("Applied Actions:", round(self.current_control.throttle, 2), round(self.current_control.steer, 2), round(self.current_control.brake, 2), " Network Brake:", dnn_brake, " Network Offset:", offset, " Near Node:", near_node, )
 
         measurement_data = {
             'x': gps[0],

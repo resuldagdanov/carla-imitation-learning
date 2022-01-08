@@ -104,8 +104,6 @@ class OffsetModel(nn.Module):
         dnn_brake = dnn_brake.squeeze(0).cpu().detach().numpy()[0]
         offset_amount = offset_amount.squeeze(0).cpu().detach().numpy()[0]
 
-        print(dnn_brake)
-
         brake = np.where(dnn_brake < 0.5, 0.0, 1.0)
         offset = offset_amount * 3
 
